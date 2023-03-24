@@ -45,25 +45,26 @@ void gerir_carros(Garagem *g)
 void pesquisas(Garagem *g)
 {
     int opt = 0;
-    do
-    {
-        opt = display_pesquisas_menu();
-        switch (opt)
-        {
-        case 1:
-            system("clear");
-            puts("Pesquisar Marca");
-            break;
-        case 2:
-            system("clear");
-            puts("Ficha de Carro");
-            break;
-        case 3:
-            system("clear");
-            puts("Pesquisar Ano");
-            break;
-        }
+    char marca[TEXT_LEN];
+    int ano;
 
+    do {
+        opt = display_pesquisas_menu();
+        switch (opt) {
+            case 1:
+                system("clear");
+                get_string("Insira a marca para pesquisar", marca, TEXT_LEN);
+                pesquisar_marca(g, marca);
+                break;
+            case 2:
+                system("clear");
+                break;
+            case 3:
+                system("clear");
+                ano = get_int("Insira o ano para pesquisar");
+                pesquisar_ano(g, ano);
+                break;
+        }
     } while (opt != 9);
     system("clear");
 }
