@@ -8,6 +8,11 @@
 
 void gerir_carros(Garagem *g)
 {
+    char marca[TEXT_LEN];
+    char modelo[TEXT_LEN];
+    int ano;
+    char matricula[TEXT_LEN];
+    double valor;
     int opt = 0;
     do
     {
@@ -16,7 +21,12 @@ void gerir_carros(Garagem *g)
         {
         case 1:
             system("clear");
-            puts("Inserir Carro");
+            get_string("Insira a matricula",matricula,TEXT_LEN);
+            get_string("Insira a marca",marca,TEXT_LEN);
+            get_string("Insira o modelo",modelo,TEXT_LEN);
+            ano=get_int("Insira o ano da viatura");
+            valor=get_double("Insira o valor");
+            inserir_carro(g,matricula,marca,modelo,ano,valor);
             break;
         case 2:
             system("clear");
