@@ -10,7 +10,7 @@ void gerir_carros(Garagem *g)
 {
     char marca[TEXT_LEN];
     char modelo[TEXT_LEN];
-    int ano;
+    int ano,id ;
     char matricula[TEXT_LEN];
     double valor;
     int opt = 0;
@@ -30,11 +30,14 @@ void gerir_carros(Garagem *g)
             break;
         case 2:
             system("clear");
-            puts("ApagarCarro");
+            id = get_int("Insira ID do Carro");
+            apagar_carro(g,id);
             break;
         case 3:
             system("clear");
-            puts("Editar modelo");
+            id = get_int("Insira ID do Carro");
+            get_string("Insira novo modelo",modelo,TEXT_LEN);
+            editar_modelo(g,id,modelo);
             break;
         }
 
@@ -45,26 +48,29 @@ void gerir_carros(Garagem *g)
 void pesquisas(Garagem *g)
 {
     int opt = 0;
-    char marca[TEXT_LEN];
     int ano;
-
-    do {
+    char marca[TEXT_LEN];
+    do
+    {
         opt = display_pesquisas_menu();
-        switch (opt) {
-            case 1:
-                system("clear");
-                get_string("Insira a marca para pesquisar", marca, TEXT_LEN);
-                pesquisar_marca(g, marca);
-                break;
-            case 2:
-                system("clear");
-                break;
-            case 3:
-                system("clear");
-                ano = get_int("Insira o ano para pesquisar");
-                pesquisar_ano(g, ano);
-                break;
+        switch (opt)
+        {
+        case 1:
+            system("clear");
+            get_string("Insira marca",marca,TEXT_LEN);
+            pesquisar_marca(g, marca);
+            break;
+        case 2:
+            system("clear");
+            puts("Ficha de Carro");
+            break;
+        case 3:
+            system("clear");
+            ano = get_int("Insira ano do carro");
+            pesquisar_ano(g,ano);
+            break;
         }
+
     } while (opt != 9);
     system("clear");
 }
@@ -95,6 +101,7 @@ int main(int argc, char const *argv[])
             break;
         }
     } while (opt != 9);
+    free_garagem(g);
     puts("Obrigado! A sair...");
     return EXIT_SUCCESS;
 }

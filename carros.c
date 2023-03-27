@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "carros.h"
+#include "ui.h"
 
 /*
 ! Funções Auxiliares
@@ -54,6 +55,23 @@ Garagem *newGaragem(int dim, char *nome)
  */
 void free_garagem(Garagem *g)
 {
+    //loop Carros
+    for (int i = 0; i < g->max_carros; i++)
+    {
+        // Diferente caso aja algum carro
+        if (g->carros[i] != NULL)
+        {
+            //Limpa todos os campos
+            free(g->carros[i]->marca);
+            free(g->carros[i]->modelo);
+            free(g->carros[i]->matricula);
+            
+            free(g->carros[i]);
+            g->carros[i] = NULL;
+        }
+    }
+    free(g->carros);
+    free(g);
 }
 
 /**
@@ -127,6 +145,29 @@ void inserir_carro(Garagem *g, char *matricula, char *marca, char *modelo, int a
  */
 void apagar_carro(Garagem *g, int id)
 {
+    //Contador de id
+    int cont_id;
+    //loop de carros
+    for (int i = 0; i < g->max_carros; i++)
+    {
+        //Caso o id digitado seja igual ao id do carro
+        if (g->carros[i] != NULL && g->carros[i]->id == id)
+        {
+            char *matricula_rev = malloc(TEXT_LEN*sizeof(char));    //Cria e aloca memoria na matricula_rev     
+            strcpy(matricula_rev,g->carros[i]->matricula);          //Copia a matricula do carro para outra
+            free(g->carros[i]);                                     //Limpa menoria deste carro
+            g->carros[i] = NULL;
+            printf("Matricula: %s foi apagada com sucesso!\n", matricula_rev);
+            free(matricula_rev);                                    // Limpa memoria
+            cont_id++;
+        }
+        
+    }
+    if (cont_id == 0)                                               //Caso nao seja encontrado id erro
+    {
+        printf("Nenhum Carro foi encontrado com ID %d\n",id);
+    }
+    
 }
 
 /**
@@ -135,6 +176,26 @@ void apagar_carro(Garagem *g, int id)
  */
 void editar_modelo(Garagem *g, int id, char *modelo)
 {
+    //Contador de modelos
+    int edit_modelo = 0;
+    //loop de carros
+    for (int i = 0; i < g->max_carros; i++)
+    {
+        //Caso o id digitado seja igual ao id do carro
+        if (g->carros[i] != NULL && g->carros[i]->id == id)
+        {
+            strcpy(g->carros[i]->modelo,modelo);                //Copia a nova matricula par antiga
+            printf("O Carro ID: %d o modelo foi alterado para: %s",g->carros[i]->id, modelo);  
+            edit_modelo++;         
+        }     
+    }
+    if (edit_modelo == 0)                                       //Caso nao seja encontrado id erro
+    {
+        printf("Nenhum Carro foi encontrado com ID %d\n",id);
+    }
+    
+
+    
 }
 
 /**
@@ -142,23 +203,25 @@ void editar_modelo(Garagem *g, int id, char *modelo)
  * Imprime lista de carros que correspondem à pesquisa
  */
 void pesquisar_marca(Garagem *g, char *pesquisa)
-{
-    int carros_encontrados = 0; // Contador de carros encontrados
-
-    // Percorre todos os carros na garagem
-    for (int i = 0; i < g->max_carros; i++) {
-        // Verifica se o carro na posição i existe e se a marca corresponde à desejada
-        if (g->carros[i] != NULL && strcmp(g->carros[i]->marca, pesquisa) == 0) {
-            // Imprime as informações do carro encontrado
-            printf("%s %s %d\n", g->carros[i]->marca, g->carros[i]->modelo, g->carros[i]->ano);
-            carros_encontrados++; // Incrementa o contador de carros encontrados
+{   
+    //Contador de marcas
+    int get_marca = 0;
+    //loop de carros
+    for (int i = 0; i < g->max_carros; i++)
+    {
+            //Caso o marca digitado seja igual á marca do carro
+        if (g->carros[i] != NULL && strcmp(g->carros[i]->marca, pesquisa)==0)
+        {
+            //Digita marca,modelo e ano
+            printf("Marca:%s  Modelo:%s  Ano:%d\n", g->carros[i]->marca, g->carros[i]->modelo, g->carros[i]->ano);
+            get_marca++;
         }
+        
     }
-
-    // Caso nenhum carro seja encontrado, imprime uma mensagem informando
-    if (carros_encontrados == 0) {
-        printf("Nenhum carro encontrado com a marca %s.\n", pesquisa);
-    }
+    if (get_marca == 0)
+    {
+        printf("Nenhum Carro foi encontrado no ano %s\n",pesquisa);
+    } 
 }
 
 /**
@@ -168,6 +231,22 @@ void pesquisar_marca(Garagem *g, char *pesquisa)
  */
 void ficha_carro(Garagem *g, int id)
 {
+    int cont_id = 0;
+    for (int i = 0; i < g->max_carros; i++)
+    {
+        if (g->carros[i] != NULL && g->carros[i]->id == id)
+        {
+            printf("Matricula:%s  Marca:%s  Modelo:%s  Ano:%d  Valor:%lf",g->carros[i]->matricula, g->carros[i]->marca, g->carros[i]->modelo, g->carros[i]->ano, g->carros[i]->valor);
+            cont_id++;
+        }
+        
+    }
+    if (cont_id == 0)
+    {
+        printf("Nenhum Carro foi encontrado com ID %d\n",id);
+    }
+    
+    
 }
 
 /**
@@ -176,20 +255,19 @@ void ficha_carro(Garagem *g, int id)
  */
 void pesquisar_ano(Garagem *g, int ano)
 {
-    int carros_encontrados = 0; // Contador de carros encontrados
-
-    // Percorre todos os carros na garagem
-    for (int i = 0; i < g->max_carros; i++) {
-        // Verifica se o carro na posição i existe e se o ano corresponde ao desejado
-        if (g->carros[i] != NULL && g->carros[i]->ano == ano) {
-            // Imprime as informações do carro encontrado
-            printf("%s %s %d\n", g->carros[i]->marca, g->carros[i]->modelo, g->carros[i]->ano);
-            carros_encontrados++; // Incrementa o contador de carros encontrados
+    int get_car = 0;
+    for (int i = 0; i < g->max_carros; i++)
+    {
+        if(g->carros[i] != NULL && g->carros[i]->ano == ano)
+        {
+            printf("Marca:%s  Modelo:%s  Ano:%d\n", g->carros[i]->marca, g->carros[i]->modelo, g->carros[i]->ano);
+            get_car++;
         }
+        
+    }  
+    if (get_car == 0)
+    {
+        printf("Nenhum Carro foi encontrado no ano %d\n",ano);
     }
-
-    // Caso nenhum carro seja encontrado, imprime uma mensagem informando
-    if (carros_encontrados == 0) {
-        printf("Nenhum carro encontrado com o ano %d.\n", ano);
-    }
+    
 }
