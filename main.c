@@ -48,7 +48,7 @@ void gerir_carros(Garagem *g)
 void pesquisas(Garagem *g)
 {
     int opt = 0;
-    int ano;
+    int ano,id;
     char marca[TEXT_LEN];
     do
     {
@@ -62,7 +62,9 @@ void pesquisas(Garagem *g)
             break;
         case 2:
             system("clear");
-            puts("Ficha de Carro");
+            id = get_int("Insira ID do Carro");
+            ficha_carro(g,id);
+
             break;
         case 3:
             system("clear");

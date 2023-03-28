@@ -148,6 +148,11 @@ void apagar_carro(Garagem *g, int id)
     //Contador de id
     int cont_id;
     //loop de carros
+    if (!g->num_carros)
+    { // ==0
+        puts("Erro! Garagem vazia");
+        return;
+    }
     for (int i = 0; i < g->max_carros; i++)
     {
         //Caso o id digitado seja igual ao id do carro
@@ -155,8 +160,12 @@ void apagar_carro(Garagem *g, int id)
         {
             char *matricula_rev = malloc(TEXT_LEN*sizeof(char));    //Cria e aloca memoria na matricula_rev     
             strcpy(matricula_rev,g->carros[i]->matricula);          //Copia a matricula do carro para outra
-            free(g->carros[i]);                                     //Limpa menoria deste carro
-            g->carros[i] = NULL;
+            g->valor_total -=g->carros[i]->valor;
+            g->num_carros --;
+            free(g->carros[i]->marca);
+            free(g->carros[i]->matricula);
+            free(g->carros[i]->modelo);
+            free(g->carros[i]);
             printf("Matricula: %s foi apagada com sucesso!\n", matricula_rev);
             free(matricula_rev);                                    // Limpa memoria
             cont_id++;
