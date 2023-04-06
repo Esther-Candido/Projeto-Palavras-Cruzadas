@@ -36,6 +36,9 @@ void criarTabuleiroFromFile(Game *g);
 
 void criarTabuleiro(Game *g);
 
+void rules(Game *g); //! Ruben
+
+
 /* ############################################ */
 /* ##### Implementação funções públicas #######*/
 
@@ -69,13 +72,18 @@ void freeGame(Game *g)
 }
 
 void playGame(Game *g)
-{
+{   
+    rules(g);  //!ruben 
+    printTabuleiro(g); //!ruben                          
+    
     // TODO: Função que joga o jogo.
     // !Pode invocar outras funçoes que serão criadas pelos alunos
 }
 
 /* ############################################ */
 /* ##### Implementação funções internas #######*/
+
+
 
 void loadOptions(Game *g, int argc, char const *argv[])
 {
@@ -92,7 +100,7 @@ void loadOptions(Game *g, int argc, char const *argv[])
             exit(EXIT_FAILURE);
             break;
         case 't':
-                //TODO: A fazer pelo aluno
+            //TODO: A fazer pelo aluno
             break;
         case 'n':
                 //TODO: A fazer pelo aluno
@@ -122,9 +130,41 @@ void criarTabuleiroFromFile(Game *g)
 void criarTabuleiro(Game *g)
 {
     /**
-     * TODO: A fazer pelo aluno
+     * ! Ruben 
      * Cria tabuleiro default 9x9 conforme enunciado
      */
+    g->tabuleiro = (int**) malloc(sizeof(int*) * g->dim);
+    for (int i = 0; i < g->dim; i++) {
+        g->tabuleiro[i] = (int*) malloc(sizeof(int) * g->dim);
+    }
+   
+}
+
+void rules(Game *g){
+    /**
+     * ! Ruben 
+     * Cria todas as regras 
+     */
+     for (int i = 0; i < g->dim; i++) {
+        for (int j = 0; j < g->dim; j++) {
+            if (i == 0 && j == 0 || i == 0 && j == g->dim - 1 || i == g->dim - 1 && j == 0 || i == g->dim - 1 && j == g->dim - 1) {
+                g->tabuleiro[i][j] = SYMBOL_WORD_X2; // Simbolo '$'
+            } else if (i == g->dim / 2 && j == g->dim / 2) {
+                g->tabuleiro[i][j] = SYMBOL_X4 ; // Simbolo '4'
+            } else if (i == j || i == g->dim - 1 - j) {
+                g->tabuleiro[i][j] = SYMBOL_X2; // Simbolo '2'
+            } else if ((i == g->dim / 2 || j == g->dim / 2) && (i - j == g->dim / 2 || j - i == g->dim / 2)) {
+                g->tabuleiro[i][j] = SYMBOL_X3; // Simbolo '3'
+            } else if (i == g->dim / 2 - 1 && j == g->dim / 2 || i == g->dim / 2 + 1 && j == g->dim / 2 || j == g->dim / 2 - 1 && i == g->dim / 2 || j == g->dim / 2 + 1 && i == g->dim / 2) {
+                g->tabuleiro[i][j] = SYMBOL_WORD_X3; // Simbolo '!'
+            } else if ((i == 1 && j == g->dim / 2 - 1) || (i == 1 && j == g->dim / 2 + 1) || (i == g->dim - 2 && j == g->dim / 2 - 1) || (i == g->dim - 2 && j == g->dim / 2 + 1)
+                    || (j == 1 && i == g->dim / 2 - 1) || (j == 1 && i == g->dim / 2 + 1) || (j == g->dim - 2 && i == g->dim / 2 - 1) || (j == g->dim - 2 && i == g->dim / 2 + 1)) {
+                g->tabuleiro[i][j] = SYMBOL_FORBIDDEN; //Simbolo '#'
+            } else {
+                g->tabuleiro[i][j] = SYMBOL_EMPTY; //Simbolo '.'
+            }
+        }
+    }
 }
 
 void remove_spaces(char *s)
