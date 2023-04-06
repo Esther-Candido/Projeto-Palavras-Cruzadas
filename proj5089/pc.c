@@ -133,9 +133,17 @@ void criarTabuleiro(Game *g)
      * ! Ruben 
      * Cria tabuleiro default 9x9 conforme enunciado
      */
-    g->tabuleiro = (int**) malloc(sizeof(int*) * g->dim);
+
+    // Aloca a memória necessária para o tabuleiro
+    g->tabuleiro = malloc(g->dim * sizeof(char *));
     for (int i = 0; i < g->dim; i++) {
-        g->tabuleiro[i] = (int*) malloc(sizeof(int) * g->dim);
+        g->tabuleiro[i] = malloc(g->dim * sizeof(char));
+    }
+     // Inicializa todas as casas do tabuleiro com o valor  '.'
+    for (int i = 0; i < g->dim; i++) {
+        for (int j = 0; j < g->dim; j++) {
+            g->tabuleiro[i][j] = SYMBOL_EMPTY;
+        }
     }
    
 }
@@ -147,7 +155,7 @@ void rules(Game *g){
      */
      for (int i = 0; i < g->dim; i++) {
         for (int j = 0; j < g->dim; j++) {
-            if (i == 0 && j == 0 || i == 0 && j == g->dim - 1 || i == g->dim - 1 && j == 0 || i == g->dim - 1 && j == g->dim - 1) {
+            if ((i == 0 && j == 0) || (i == 0 && j == g->dim - 1) || (i == g->dim - 1 && j == 0) || (i == g->dim - 1 && j == g->dim - 1)) {
                 g->tabuleiro[i][j] = SYMBOL_WORD_X2; // Simbolo '$'
             } else if (i == g->dim / 2 && j == g->dim / 2) {
                 g->tabuleiro[i][j] = SYMBOL_X4 ; // Simbolo '4'
@@ -155,14 +163,12 @@ void rules(Game *g){
                 g->tabuleiro[i][j] = SYMBOL_X2; // Simbolo '2'
             } else if ((i == g->dim / 2 || j == g->dim / 2) && (i - j == g->dim / 2 || j - i == g->dim / 2)) {
                 g->tabuleiro[i][j] = SYMBOL_X3; // Simbolo '3'
-            } else if (i == g->dim / 2 - 1 && j == g->dim / 2 || i == g->dim / 2 + 1 && j == g->dim / 2 || j == g->dim / 2 - 1 && i == g->dim / 2 || j == g->dim / 2 + 1 && i == g->dim / 2) {
+            } else if ((i == g->dim / 2 - 1 && j == g->dim / 2 )|| (i == g->dim / 2 + 1 && j == g->dim / 2 )|| (j == g->dim / 2 - 1 && i == g->dim / 2) || (j == g->dim / 2 + 1 && i == g->dim / 2)) {
                 g->tabuleiro[i][j] = SYMBOL_WORD_X3; // Simbolo '!'
             } else if ((i == 1 && j == g->dim / 2 - 1) || (i == 1 && j == g->dim / 2 + 1) || (i == g->dim - 2 && j == g->dim / 2 - 1) || (i == g->dim - 2 && j == g->dim / 2 + 1)
                     || (j == 1 && i == g->dim / 2 - 1) || (j == 1 && i == g->dim / 2 + 1) || (j == g->dim - 2 && i == g->dim / 2 - 1) || (j == g->dim - 2 && i == g->dim / 2 + 1)) {
                 g->tabuleiro[i][j] = SYMBOL_FORBIDDEN; //Simbolo '#'
-            } else {
-                g->tabuleiro[i][j] = SYMBOL_EMPTY; //Simbolo '.'
-            }
+            } 
         }
     }
 }
