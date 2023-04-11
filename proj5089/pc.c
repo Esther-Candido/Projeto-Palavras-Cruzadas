@@ -12,6 +12,9 @@
 #include "pc.h"
 #include "ui.h"
 
+#define HORIZONTAL_WORD 2  //!ruben
+#define VERTICAL_WORD 3     //!ruben
+
 /* ############################################ */
 /* ####### Declaração funções internas #########*/
 
@@ -37,6 +40,8 @@ void criarTabuleiroFromFile(Game *g);
 void criarTabuleiro(Game *g);
 
 void rules(Game *g); //! Ruben
+
+void inserirPalavra(Game *g, char *palavra, int direcao, char *posicaoInicial);
 
 
 /* ############################################ */
@@ -74,12 +79,32 @@ void freeGame(Game *g)
 void playGame(Game *g)
 {   
     rules(g);  //!ruben 
-    printTabuleiro(g); //!ruben                          
+
+    // Mostra o tabuleiro
+    printTabuleiro(g);
+
+    // Solicita ao utilizador a palavra, a direção e a posição inicial
+    char palavra[10];
+    char direcao;
+    char posicaoInicial[3];
+
+    printf("Insira a palavra: ");
+    scanf("%s", palavra);
     
+    printf("Insira a direção ('h' para horizontal ou 'v' para vertical): ");
+    scanf(" %c", &direcao);
+
+    printf("Insira a posição inicial (exemplo: A1): ");
+    scanf("%s", posicaoInicial);
+
+    inserirPalavra(g, palavra, direcao, posicaoInicial);
+
+    // Mostra o tabuleiro com as palavras inseridas
+    printTabuleiro(g);
+
     // TODO: Função que joga o jogo.
     // !Pode invocar outras funçoes que serão criadas pelos alunos
 }
-
 /* ############################################ */
 /* ##### Implementação funções internas #######*/
 
@@ -134,18 +159,16 @@ void criarTabuleiro(Game *g)
      * Cria tabuleiro default 9x9 conforme enunciado
      */
 
-    // Aloca a memória necessária para o tabuleiro
     g->tabuleiro = malloc(g->dim * sizeof(char *));
     for (int i = 0; i < g->dim; i++) {
         g->tabuleiro[i] = malloc(g->dim * sizeof(char));
     }
-     // Inicializa todas as casas do tabuleiro com o valor  '.'
+    // Inicializa todas as casas do tabuleiro com o valor  '.'
     for (int i = 0; i < g->dim; i++) {
         for (int j = 0; j < g->dim; j++) {
             g->tabuleiro[i][j] = SYMBOL_EMPTY;
         }
     }
-   
 }
 
 void rules(Game *g){
@@ -172,6 +195,27 @@ void rules(Game *g){
         }
     }
 }
+
+void inserirPalavra(Game *g, char *palavra, int direcao, char *posicaoInicial) {
+    int linha = posicaoInicial[1] - '1';
+    int coluna = posicaoInicial[0] - 'A';
+
+    printf("Palavra: %s, Direcao: %d, Posicao: %s, Linha: %d, Coluna: %d\n", palavra, direcao, posicaoInicial, linha, coluna);
+
+    for (int i = 0; i < strlen(palavra); i++) {
+        if (direcao == 'h') {
+            g->tabuleiro[linha][coluna + i] = palavra[i];
+        } else if (direcao == 'v') {
+            g->tabuleiro[linha + i][coluna] = palavra[i];
+        }
+    }     
+} 
+
+
+
+
+
+
 
 void remove_spaces(char *s)
 {
