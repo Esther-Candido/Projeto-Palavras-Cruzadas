@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "pc.h"
 #include "ui.h"
 
@@ -26,6 +27,8 @@
  */
 void remove_spaces(char *s);
 
+void to_upper(char *str);
+
 /**
  * @brief carrega as opções do jogo passado pela linha de comandos
  *
@@ -41,7 +44,15 @@ void criarTabuleiro(Game *g);
 
 void rules(Game *g); //! Ruben
 
-void inserirPalavra(Game *g, char *palavra, int direcao, char *posicaoInicial);
+int lerPosicaoInicial(char *comando, char *posicaoInicial); //! Ruben
+
+int lerDirecao(char *comando, int index, char *direcao) ; //! Ruben
+
+void lerPalavra(char *comando, int index, char *palavra) ; //! Ruben
+
+void inserirComando(Game *g); //! Ruben
+
+void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial); //! Ruben
 
 
 /* ############################################ */
@@ -83,21 +94,8 @@ void playGame(Game *g)
     // Mostra o tabuleiro
     printTabuleiro(g);
 
-    // Solicita ao utilizador a palavra, a direção e a posição inicial
-    char palavra[10];
-    char direcao;
-    char posicaoInicial[3];
-
-    printf("Insira a palavra: ");
-    scanf("%s", palavra);
-    
-    printf("Insira a direção ('h' para horizontal ou 'v' para vertical): ");
-    scanf(" %c", &direcao);
-
-    printf("Insira a posição inicial (exemplo: A1): ");
-    scanf("%s", posicaoInicial);
-
-    inserirPalavra(g, palavra, direcao, posicaoInicial);
+     // Solicita ao utilizador para inserir o comando
+    inserirComando(g);
 
     // Mostra o tabuleiro com as palavras inseridas
     printTabuleiro(g);
@@ -107,7 +105,6 @@ void playGame(Game *g)
 }
 /* ############################################ */
 /* ##### Implementação funções internas #######*/
-
 
 
 void loadOptions(Game *g, int argc, char const *argv[])
@@ -196,25 +193,136 @@ void rules(Game *g){
     }
 }
 
-void inserirPalavra(Game *g, char *palavra, int direcao, char *posicaoInicial) {
-    int linha = posicaoInicial[1] - '1';
+void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial)
+{
     int coluna = posicaoInicial[0] - 'A';
+    int linha = atoi(&posicaoInicial[1]) - 1; // Use atoi para converter corretamente para int
 
-    printf("Palavra: %s, Direcao: %d, Posicao: %s, Linha: %d, Coluna: %d\n", palavra, direcao, posicaoInicial, linha, coluna);
-
-    for (int i = 0; i < strlen(palavra); i++) {
-        if (direcao == 'h') {
+    if (direcao == 'H')
+    {
+        for (int i = 0; palavra[i] != '\0'; i++)
+        {
             g->tabuleiro[linha][coluna + i] = palavra[i];
-        } else if (direcao == 'v') {
+        }
+    }
+    else if (direcao == 'V')
+    {
+        for (int i = 0; palavra[i] != '\0'; i++)
+        {
             g->tabuleiro[linha + i][coluna] = palavra[i];
         }
-    }     
-} 
+    }
+}
 
 
+// Função para ler a coluna e a linha
+int lerPosicaoInicial(char *comando, char *posicaoInicial) {
+    // Verifica se o primeiro caractere é uma letra
+    if (!isalpha(comando[0])) {
+        printf("Erro: A coluna deve ser uma letra.\n");
+        return 0;
+    }
+
+    // Armazena a coluna na posição inicial
+    posicaoInicial[0] = comando[0];
+
+    // Lê a linha da posição inicial
+    int index = 1;
+    int i = 0;
+    char tmp[3];
+    while (isdigit(comando[index])) {
+        tmp[i++] = comando[index++];
+    }
+    tmp[i] = '\0';
+
+    // Verifica se a linha é válida
+    int linha = atoi(tmp); // atoi converte uma string em numeros
+    if (linha < 1 || linha > DIMENSION_DEFAULT) {
+        printf("Erro: A linha deve ser um número entre 1 e %d.\n", DIMENSION_DEFAULT);
+        return 0;
+    }
+
+    // Armazena a linha na posição inicial
+    strcpy(&posicaoInicial[1], tmp);
+    posicaoInicial[3] = '\0';
+
+    return index;
+}
+
+// Função para ler a direção
+int lerDirecao(char *comando, int index, char *direcao) {
+    // Armazena a direção
+    *direcao = comando[index];
+
+    // Verifica se a direção é válida
+    if (*direcao != 'H' && *direcao != 'V') {
+        printf("Erro: A direção deve ser 'H' ou 'V'.\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+// Função para ler a palavra
+void lerPalavra(char *comando, int index, char *palavra) {
+    // Copia a palavra do comando para a variável palavra
+    strcpy(palavra, &comando[index + 1]);
+}
+
+void inserirComando(Game *g)
+{
+    // Aloca memória para as variáveis
+    char *comando = (char *)malloc(30 * sizeof(char));
+    char *posicaoInicial = (char *)malloc(4 * sizeof(char));
+    char direcao;
+    char *palavra = (char *)malloc(20 * sizeof(char));
+
+    // Lê o comando do usuário
+    printf("Insira comando-> ");
+    fgets(comando, 30, stdin);
+    comando[strcspn(comando, "\n")] = 0; // Remove o caractere de nova linha
+    remove_spaces(comando);
+
+    // Converte o comando para maiúsculas
+    to_upper(comando);
+
+    // Lê a posição inicial (coluna e linha)
+    int index = lerPosicaoInicial(comando, posicaoInicial);
+    if (index == 0) {
+        free(comando);
+        free(posicaoInicial);
+        free(palavra);
+        return;
+    }
+
+    // Lê a direção (H ou V)
+    if (!lerDirecao(comando, index, &direcao)) {
+        free(comando);
+        free(posicaoInicial);
+        free(palavra);
+        return;
+    }
+
+    // Lê a palavra a ser inserida
+    lerPalavra(comando, index, palavra);
+
+    // Insere a palavra no jogo
+    inserirPalavra(g, palavra, direcao, posicaoInicial);
+
+    // Libera a memória alocada
+    free(comando);
+    free(posicaoInicial);
+    free(palavra);
+}
 
 
-
+void to_upper(char *str)
+{
+    for (; *str; ++str)
+    {
+        *str = toupper((unsigned char)*str);
+    }
+}
 
 
 void remove_spaces(char *s)
