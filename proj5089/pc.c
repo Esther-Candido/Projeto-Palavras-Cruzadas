@@ -54,6 +54,10 @@ void inserirComando(Game *g); //! Ruben
 
 void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial); //! Ruben
 
+int validarPalavra(char *palavra, char direcao, char *posicaoInicial, char **tabuleiro);
+
+int pontuacaoPalavra(Game *g, char *palavra, char **tabuleiro, int linha, int coluna, char direcao);
+
 
 /* ############################################ */
 /* ##### Implementação funções públicas #######*/
@@ -89,16 +93,26 @@ void freeGame(Game *g)
 
 void playGame(Game *g)
 {   
-    rules(g);  //!ruben 
+    
+
+    
+      rules(g);  //!ruben 
 
     // Mostra o tabuleiro
     printTabuleiro(g);
-
+    do
+    {
      // Solicita ao utilizador para inserir o comando
     inserirComando(g);
 
     // Mostra o tabuleiro com as palavras inseridas
-    printTabuleiro(g);
+    printTabuleiro(g);  
+    printf("Jogada %d realizada.\n", g->jogadasRealizadas);
+        
+    } while (g->jogadasRealizadas < g->maxJogadas);
+    
+
+    
 
     // TODO: Função que joga o jogo.
     // !Pode invocar outras funçoes que serão criadas pelos alunos
@@ -195,17 +209,28 @@ void rules(Game *g){
 
 void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial)
 {
+    /**
+     * ! Ruben 
+     * Funçao para inserir palavra horizontal ou vertical
+     */
     int coluna = posicaoInicial[0] - 'A';
-    int linha = atoi(&posicaoInicial[1]) - 1; // Use atoi para converter corretamente para int
+    int linha = atoi(&posicaoInicial[1]) - 1; // atoi para converter corretamente para int
+    /**
+     * ! Decorar
+     * &posicaoInicial[1]: Este é o endereço do segundo elemento do array 
+     * posicaoInicial. Como o primeiro elemento contém a coluna (uma letra), o segundo elemento e os seguintes representam a linha (um ou mais números). O operador & retorna o endereço do elemento, então passamos esse endereço para a função atoi.
+     * atoi(&posicaoInicial[1]): A função atoi converte uma string de caracteres representando números inteiros em um valor inteiro. Neste caso, estamos passando a parte da string posicaoInicial que contém os números da linha. A função retorna o valor inteiro correspondente.
+     * atoi(&posicaoInicial[1]) - 1: Como os índices do array começam em 0, precisamos subtrair 1 do valor da linha para que ele corresponda à posição correta no array do tabuleiro. Por exemplo, se a linha inserida for 1, queremos que a posição no array seja 0.
+     */
 
-    if (direcao == 'H')
+    if (direcao == 'H')   //Horizontal
     {
         for (int i = 0; palavra[i] != '\0'; i++)
         {
             g->tabuleiro[linha][coluna + i] = palavra[i];
         }
     }
-    else if (direcao == 'V')
+    else if (direcao == 'V') //Vertical
     {
         for (int i = 0; palavra[i] != '\0'; i++)
         {
@@ -215,8 +240,12 @@ void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial)
 }
 
 
-// Função para ler a coluna e a linha
 int lerPosicaoInicial(char *comando, char *posicaoInicial) {
+    /**
+     * ! Ruben 
+     * Função para ler a coluna e a linha
+     */
+
     // Verifica se o primeiro caractere é uma letra
     if (!isalpha(comando[0])) {
         printf("Erro: A coluna deve ser uma letra.\n");
@@ -249,8 +278,13 @@ int lerPosicaoInicial(char *comando, char *posicaoInicial) {
     return index;
 }
 
-// Função para ler a direção
+
 int lerDirecao(char *comando, int index, char *direcao) {
+    /**
+     * ! Ruben 
+     * Função para ler a direção
+     */
+
     // Armazena a direção
     *direcao = comando[index];
 
@@ -263,11 +297,17 @@ int lerDirecao(char *comando, int index, char *direcao) {
     return 1;
 }
 
-// Função para ler a palavra
+
 void lerPalavra(char *comando, int index, char *palavra) {
+    /**
+     * ! Ruben 
+     * Função para ler a palavra
+     */
+
     // Copia a palavra do comando para a variável palavra
     strcpy(palavra, &comando[index + 1]);
 }
+
 
 void inserirComando(Game *g)
 {
@@ -276,7 +316,7 @@ void inserirComando(Game *g)
     char *posicaoInicial = (char *)malloc(4 * sizeof(char));
     char direcao;
     char *palavra = (char *)malloc(20 * sizeof(char));
-
+    int coluna, linha;
     // Lê o comando do usuário
     printf("Insira comando-> ");
     fgets(comando, 30, stdin);
@@ -303,16 +343,117 @@ void inserirComando(Game *g)
         return;
     }
 
+
     // Lê a palavra a ser inserida
     lerPalavra(comando, index, palavra);
 
+    
+
+   if (!validarPalavra(palavra, direcao, posicaoInicial, g->tabuleiro)) {
+        free(comando);
+        free(posicaoInicial);
+        free(palavra);
+        return;
+    }
+
     // Insere a palavra no jogo
     inserirPalavra(g, palavra, direcao, posicaoInicial);
+
+     // Atualiza o valor de coluna e linha já existentes
+    coluna = posicaoInicial[0] - 'A';
+    linha = atoi(&posicaoInicial[1]) - 1;
+
+    // Calcula a pontuação da palavra
+    int pontos = pontuacaoPalavra(g, palavra, g->tabuleiro, linha, coluna, direcao);
+
+
+    // Atualiza a pontuação do jogador e incrementa o número de jogadas realizadas
+    g->jogadasRealizadas++;
+    g->score += pontos;
+
+    // Exibe a pontuação do jogador
+    printf("Pontos obtidos nesta jogada: %d\n", pontos);
+    printf("Pontuação total: %d\n", g->score);
 
     // Libera a memória alocada
     free(comando);
     free(posicaoInicial);
     free(palavra);
+}
+
+int validarPalavra(char *palavra, char direcao, char *posicaoInicial, char **tabuleiro) {
+    // Verifica se a palavra contém apenas caracteres válidos (letras)
+    for (int j = 0; palavra[j] != '\0'; j++) {
+        if (!isalpha(palavra[j])) {
+            printf("Erro: A palavra deve conter apenas letras.\n");
+            return 0;
+        }
+    }
+
+    // Verifica se a palavra tem pelo menos 2 caracteres
+    if (strlen(palavra) < 3) {
+        printf("Erro: A palavra deve ter pelo menos 2 caracteres.\n");
+        return 0;
+    }
+
+    // Verifica se a palavra cabe no tabuleiro na direção escolhida
+    int tamanho_palavra = strlen(palavra);
+    int coluna = posicaoInicial[0] - 'A';
+    int linha = atoi(&posicaoInicial[1]) - 1;
+
+    if (direcao == 'H') {
+        if (coluna + tamanho_palavra > DIMENSION_DEFAULT) {
+            printf("Erro: A palavra excede o limite do tabuleiro.\n");
+            return 0;
+        }
+    } else { // direcao == 'V'
+        if (linha + tamanho_palavra > DIMENSION_DEFAULT) {
+            printf("Erro: A palavra excede o limite do tabuleiro.\n");
+            return 0;
+        }
+    }
+
+    
+   for (int i = 0; palavra[i] != '\0'; i++) {
+        if (direcao == 'H') {
+            if (isalpha(tabuleiro[linha][coluna + i]) || tabuleiro[linha][coluna + i] == '#') {      
+                printf("Erro: A posição já está ocupada por outra letra ou o símbolo '#'\n");
+                return 0;
+                
+            
+            }
+        } else { // direcao == 'V'
+            if (isalpha(tabuleiro[linha + i][coluna]) || tabuleiro[linha + i][coluna] == '#') {                
+                printf("Erro: A posição já está ocupada por outra letra ou o símbolo '#'\n");
+                return 0;
+                
+            } 
+        }
+    }
+    return 1;
+
+    }
+    
+
+
+int pontuacaoPalavra(Game *g, char *palavra, char **tabuleiro, int linha, int coluna, char direcao) {
+    int pontos = 0;
+    int valorLetra[] = {2, 4, 3, 1, 2, 3, 1, 3, 2, 3, 7, 5, 4, 4, 2, 4, 6, 3, 3, 4, 6, 5, 9, 6, 7, 8};
+
+    for (int i = 0; palavra[i] != '\0'; i++) {
+        // Calcula a pontuação da letra atual
+        int letraIndex = palavra[i] - 'A';
+        pontos += valorLetra[letraIndex];
+
+        // Atualiza linha/coluna para a próxima letra, de acordo com a direção
+        if (direcao == 'H') {
+            coluna++;
+        } else {
+            linha++;
+        }
+    }
+
+    return pontos;
 }
 
 
