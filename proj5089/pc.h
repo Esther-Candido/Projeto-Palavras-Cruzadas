@@ -14,7 +14,7 @@
 // CONSTANTES DE DEFAULT
 
 #define DIMENSION_DEFAULT 9 //Dimensão do tabuleiro default
-#define NOT_DEFINED -1   
+#define NOT_DEFINED 3   
 
 // Simbolos de Tabuleiro
 #define SYMBOL_EMPTY '.'

@@ -414,22 +414,37 @@ int validarPalavra(char *palavra, char direcao, char *posicaoInicial, char **tab
     }
 
     
-   for (int i = 0; palavra[i] != '\0'; i++) {
+   int letrasIguais = 0;
+
+    for (int i = 0; palavra[i] != '\0'; i++) {
         if (direcao == 'H') {
-            if (isalpha(tabuleiro[linha][coluna + i]) || tabuleiro[linha][coluna + i] == '#') {      
-                printf("Erro: A posição já está ocupada por outra letra ou o símbolo '#'\n");
+            if (isalpha(tabuleiro[linha][coluna + i]) && tabuleiro[linha][coluna + i] != palavra[i]) {
+                printf("Erro: A posição já está ocupada por outra letra.\n");
                 return 0;
-                
-            
+            } else if (tabuleiro[linha][coluna + i] == '#') {
+                printf("Erro: A posição está ocupada pelo símbolo '#'.\n");
+                return 0;
+            } else if (tabuleiro[linha][coluna + i] == palavra[i]) {
+                letrasIguais++;
             }
         } else { // direcao == 'V'
-            if (isalpha(tabuleiro[linha + i][coluna]) || tabuleiro[linha + i][coluna] == '#') {                
-                printf("Erro: A posição já está ocupada por outra letra ou o símbolo '#'\n");
+            if (isalpha(tabuleiro[linha + i][coluna]) && tabuleiro[linha + i][coluna] != palavra[i]) {
+                printf("Erro: A posição já está ocupada por outra letra.\n");
                 return 0;
-                
-            } 
+            } else if (tabuleiro[linha + i][coluna] == '#') {
+                printf("Erro: A posição está ocupada pelo símbolo '#'.\n");
+                return 0;
+            } else if (tabuleiro[linha + i][coluna] == palavra[i]) {
+                letrasIguais++;
+            }
         }
     }
+
+    if (letrasIguais > 1) {
+        printf("Erro: Apenas uma letra pode ser igual.\n");
+        return 0;
+    }
+
     return 1;
 
     }
