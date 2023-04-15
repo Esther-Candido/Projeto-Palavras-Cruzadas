@@ -14,7 +14,7 @@
 // CONSTANTES DE DEFAULT
 
 #define DIMENSION_DEFAULT 9 //Dimensão do tabuleiro default
-#define NOT_DEFINED 3   
+#define NOT_DEFINED -1   
 
 // Simbolos de Tabuleiro
 #define SYMBOL_EMPTY '.'
@@ -36,7 +36,7 @@ typedef struct _game
     int jogadasRealizadas;
     int score;//pontuação acumulada do jogo
     char **tabuleiro;
-
+    int endPlaying;
     //Opções de jogo
     
     int dim;//dimensão do tabuleiro. Ou é dado ou calculado quando o tabuleiro é criado a partir de um ficheiro
@@ -64,6 +64,8 @@ Game *newGame(int argc, char const *argv[]);
  * @param g Jogo
  */
 void freeGame(Game *g);
+
+
 
 /**
  * @brief Joga o jogo
