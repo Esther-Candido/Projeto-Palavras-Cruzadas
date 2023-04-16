@@ -13,11 +13,6 @@
 #include "pc.h"
 #include "ui.h"
 
-#define HORIZONTAL_WORD 2  //!ruben
-#define VERTICAL_WORD 3     //!ruben
-
-/* ############################################ */
-/* ####### Declaração funções internas #########*/
 
 /**
  * @brief Retira espaços de uma string.
@@ -25,9 +20,18 @@
  * https://stackoverflow.com/questions/1726302/remove-spaces-from-a-string-in-c
  * @param s String
  */
-void remove_spaces(char *s);
+void remove_spaces(char *s);    //! Feito
 
-void to_upper(char *str);
+/**
+ * @brief Converte todos os caracteres de uma string para maiúsculas.
+ *
+ * Esta função percorre cada caractere da string fornecida e o converte
+ * para sua versão maiúscula, caso seja uma letra minúscula. A conversão
+ * é feita usando a função toupper da biblioteca ctype.h.
+ *
+ * @param str Ponteiro para a string a ser convertida.
+ */
+void to_upper(char *str);  //! Novo
 
 /**
  * @brief carrega as opções do jogo passado pela linha de comandos
@@ -36,29 +40,112 @@ void to_upper(char *str);
  * @param argc
  * @param argv
  */
-void loadOptions(Game *g, int argc, char const *argv[]);
+void loadOptions(Game *g, int argc, char const *argv[]);    //TODO Incompleto
 
-void freeGame(Game *g);
+void freeGame(Game *g); //!Feito
 
-void criarTabuleiroFromFile(Game *g) ;
+void criarTabuleiroFromFile(Game *g) ; //TODO Incompleto
 
-void criarTabuleiro(Game *g);
+/**
+ * @brief Cria e inicializa o tabuleiro do jogo.
+ *
+ * Esta função aloca memória para o tabuleiro do jogo, com base nas dimensões
+ * fornecidas no objeto Game. Em seguida, inicializa todas as células do tabuleiro
+ * com o caractere vazio (SYMBOL_EMPTY), que é definido como '.'.
+ *
+ * @param g Ponteiro para a estrutura do jogo (Game) onde o tabuleiro será criado.
+ */
+void criarTabuleiro(Game *g);   //!Feito
 
-void rules(Game *g); //! Ruben
+/**
+ * @brief Define as regras para a colocação das palavras no tabuleiro do jogo.
+ *
+ * Esta função atribui os símbolos especiais às células do tabuleiro de acordo
+ * com as regras do jogo. Os símbolos incluem:
+ * - SYMBOL_WORD_X2 ('$'): Dobra o valor da palavra;
+ * - SYMBOL_X4 ('4'): Quadruplica o valor da célula;
+ * - SYMBOL_X2 ('2'): Dobra o valor da célula;
+ * - SYMBOL_X3 ('3'): Triplica o valor da célula;
+ * - SYMBOL_WORD_X3 ('!'): Triplica o valor da palavra;
+ * - SYMBOL_FORBIDDEN ('#'): Célula proibida para a colocação de palavras.
+ *
+ * @param g Ponteiro para a estrutura do jogo (Game) que contém o tabuleiro.
+ */
+void rules(Game *g); //! Novo
 
-int lerPosicaoInicial(Game *g,char *comando, char *posicaoInicial); //! Ruben
+/**
+ * @brief Lê a posição inicial (coluna e linha) do comando fornecido pelo usuário.
+ * @param g Ponteiro para a estrutura do jogo.
+ * @param comando String com o comando inserido pelo usuário.
+ * @param posicaoInicial String para armazenar a posição inicial (coluna e linha).
+ * @return Retorna o índice atualizado após ler a posição inicial, caso contrário, retorna 0.
+ */
+int lerPosicaoInicial(Game *g,char *comando, char *posicaoInicial);  //! Novo
 
-int lerDirecao(char *comando, int index, char *direcao) ; //! Ruben
+/**
+ * @brief Lê a direção (H ou V) do comando fornecido pelo usuário.
+ * @param comando String com o comando inserido pelo usuário.
+ * @param index Índice atualizado após ler a posição inicial.
+ * @param direcao Ponteiro para armazenar a direção lida (H ou V).
+ * @return Retorna 1 se a direção for válida, caso contrário, retorna 0.
+ */
+int lerDirecao(char *comando, int index, char *direcao) ;  //! Novo
 
-void lerPalavra(char *comando, int index, char *palavra) ; //! Ruben
+/**
+ * @brief Lê a palavra do comando fornecido pelo usuário.
+ * @param comando String com o comando inserido pelo usuário.
+ * @param index Índice atualizado após ler a posição inicial e a direção.
+ * @param palavra Ponteiro para armazenar a palavra lida.
+ */
+void lerPalavra(char *comando, int index, char *palavra) ;  //! Novo
 
-void inserirComando(Game *g); //! Ruben
+/**
+ * @brief Insere um comando no jogo e atualiza a pontuação do jogador.
+ * @param g Ponteiro para a estrutura Game que contém informações do jogo.
+ */
+void inserirComando(Game *g);  //! Novo
 
-void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial); //! Ruben
+/**
+ * @brief Valida se uma palavra pode ser inserida no tabuleiro na posição e direção especificadas.
+ * @param g Ponteiro para a estrutura Game que contém informações do jogo.
+ * @param palavra A palavra a ser inserida.
+ * @param direcao A direção da palavra a ser inserida ('H' para horizontal, 'V' para vertical).
+ * @param posicaoInicial A posição inicial da palavra no tabuleiro.
+ * @param tabuleiro O tabuleiro onde a palavra será inserida.
+ * @return Retorna 1 se a palavra for válida e 0 caso contrário.
+ */
+int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, char **tabuleiro);  //! Novo
 
-int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, char **tabuleiro); //!Ruben
+/**
+ * @brief Calcula a pontuação de uma letra individual.
+ * @param letra A letra para a qual se deseja calcular a pontuação.
+ * @return A pontuação da letra.
+ */
+int pontuacaoLetra(char letra);  //! Novo
 
-int pontuacaoPalavra(Game *g, char *palavra, char **tabuleiro, int linha, int coluna, char direcao); //! Imcompleto
+/**
+ * @brief Aplica as regras de multiplicação de pontos à palavra inserida no tabuleiro.
+ * @param g Ponteiro para a estrutura do jogo.
+ * @param palavra A palavra que foi inserida no tabuleiro.
+ * @param tabuleiro Matriz que representa o tabuleiro do jogo.
+ * @param linha A linha onde a palavra começa no tabuleiro.
+ * @param coluna A coluna onde a palavra começa no tabuleiro.
+ * @param direcao A direção em que a palavra foi inserida no tabuleiro ('H' para horizontal ou 'V' para vertical).
+ * @return A pontuação da palavra após a aplicação das regras de multiplicação.
+ */
+int regrasMultiplicacao(Game *g, char *palavra, char **tabuleiro, int linha, int coluna, char direcao); //! Novo
+
+/**
+ * @brief Insere uma palavra no tabuleiro na posição e direção especificadas.
+ * @param g Ponteiro para a estrutura Game que contém informações do jogo.
+ * @param palavra A palavra a ser inserida.
+ * @param direcao A direção da palavra a ser inserida ('H' para horizontal, 'V' para vertical).
+ * @param posicaoInicial A posição inicial da palavra no tabuleiro.
+ */
+void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial);  //! Novo
+
+
+
 
 
 /* ############################################ */
@@ -140,13 +227,11 @@ void playGame(Game *g)
      } while (g->jogadasRealizadas < g->maxJogadas || g->maxJogadas==NOT_DEFINED);
 
      PRINT_FINAL_SCORE(g->score);
-     
+   
     
     // TODO: Função que joga o jogo.
     // !Pode invocar outras funçoes que serão criadas pelos alunos
 }
-/* ############################################ */
-/* ##### Implementação funções internas #######*/
 
 
 void loadOptions(Game *g, int argc, char const *argv[])
@@ -196,7 +281,6 @@ void loadOptions(Game *g, int argc, char const *argv[])
 }
 
 
-
 void criarTabuleiroFromFile(Game *g)
 {
     /**
@@ -208,11 +292,7 @@ void criarTabuleiroFromFile(Game *g)
 
 void criarTabuleiro(Game *g)
 {
-    /**
-     * ! Ruben 
-     * Cria tabuleiro default 9x9 conforme enunciado
-     */
-
+    // Aloca memória para o tabuleiro com base nas dimensões fornecidas
     g->tabuleiro = malloc(g->dim * sizeof(char *));
     for (int i = 0; i < g->dim; i++) {
         g->tabuleiro[i] = malloc(g->dim * sizeof(char));
@@ -225,11 +305,9 @@ void criarTabuleiro(Game *g)
     }
 }
 
+
 void rules(Game *g){
-    /**
-     * ! Ruben 
-     * Cria todas as regras 
-     */
+    
      for (int i = 0; i < g->dim; i++) {
         for (int j = 0; j < g->dim; j++) {
             if ((i == 0 && j == 0) || (i == 0 && j == g->dim - 1) || (i == g->dim - 1 && j == 0) || (i == g->dim - 1 && j == g->dim - 1)) {
@@ -250,42 +328,10 @@ void rules(Game *g){
     }
 }
 
-void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial)
-{
-    /**
-     * ! Ruben 
-     * Funçao para inserir palavra horizontal ou vertical
-     */
-    int coluna = posicaoInicial[0] - 'A';
-    int linha = atoi(&posicaoInicial[1]) - 1; // atoi para converter corretamente para int
-    /**
-     * ! Decorar
-     * &posicaoInicial[1]: Este é o endereço do segundo elemento do array 
-     * posicaoInicial. Como o primeiro elemento contém a coluna (uma letra), o segundo elemento e os seguintes representam a linha (um ou mais números). O operador & retorna o endereço do elemento, então passamos esse endereço para a função atoi.
-     * atoi(&posicaoInicial[1]): A função atoi converte uma string de caracteres representando números inteiros em um valor inteiro. Neste caso, estamos passando a parte da string posicaoInicial que contém os números da linha. A função retorna o valor inteiro correspondente.
-     * atoi(&posicaoInicial[1]) - 1: Como os índices do array começam em 0, precisamos subtrair 1 do valor da linha para que ele corresponda à posição correta no array do tabuleiro. Por exemplo, se a linha inserida for 1, queremos que a posição no array seja 0.
-     */
-
-    if (direcao == 'H')   //Horizontal
-    {
-        for (int i = 0; palavra[i] != '\0'; i++)
-        {
-            g->tabuleiro[linha][coluna + i] = palavra[i];
-        }
-    }
-    else if (direcao == 'V') //Vertical
-    {
-        for (int i = 0; palavra[i] != '\0'; i++)
-        {
-            g->tabuleiro[linha + i][coluna] = palavra[i];
-        }
-    }
-}
-
 
 int lerPosicaoInicial(Game *g,char *comando, char *posicaoInicial) {
     /**
-     * ! Ruben 
+     * ! Novo
      * Função para ler a coluna e a linha
      */
 
@@ -324,11 +370,6 @@ int lerPosicaoInicial(Game *g,char *comando, char *posicaoInicial) {
 
 
 int lerDirecao(char *comando, int index, char *direcao) {
-    /**
-     * ! Ruben 
-     * Função para ler a direção
-     */
-
     // Armazena a direção
     *direcao = comando[index];
 
@@ -343,10 +384,6 @@ int lerDirecao(char *comando, int index, char *direcao) {
 
 
 void lerPalavra(char *comando, int index, char *palavra) {
-    /**
-     * ! Ruben 
-     * Função para ler a palavra
-     */
 
     // Copia a palavra do comando para a variável palavra
     strcpy(palavra, &comando[index + 1]);
@@ -369,6 +406,7 @@ void inserirComando(Game *g)
 
     remove_spaces(comando);
 
+    
     // Converte o comando para maiúsculas
     to_upper(comando);
 
@@ -392,6 +430,10 @@ void inserirComando(Game *g)
         return;
     }
 
+    // Inicializa a linha e a coluna com os valores da posição inicial
+    coluna = posicaoInicial[0] - 'A';
+    linha = atoi(&posicaoInicial[1]) - 1;
+
     // Lê a direção (H ou V)
     if (!lerDirecao(comando, index, &direcao)) {
         free(comando);
@@ -410,15 +452,15 @@ void inserirComando(Game *g)
         return;
     }
 
-    // Insere a palavra no jogo
-    inserirPalavra(g, palavra, direcao, posicaoInicial);
-
-    // Atualiza o valor de coluna e linha já existentes
+    // Inicializa a linha e a coluna com os valores da posição inicial
     coluna = posicaoInicial[0] - 'A';
     linha = atoi(&posicaoInicial[1]) - 1;
 
-    // Calcula a pontuação da palavra
-    int pontos = pontuacaoPalavra(g, palavra, g->tabuleiro, linha, coluna, direcao);
+    // Calcula a pontuação da palavra antes de inseri-la no tabuleiro usando a função regrasMultiplicacao
+    int pontos = regrasMultiplicacao(g, palavra, g->tabuleiro, linha, coluna, direcao);
+
+    // Insere a palavra no tabuleiro
+    inserirPalavra(g, palavra, direcao, posicaoInicial);
 
     // Atualiza a pontuação do jogador e incrementa o número de jogadas realizadas
     g->jogadasRealizadas++;
@@ -433,6 +475,7 @@ void inserirComando(Game *g)
     free(posicaoInicial);
     free(palavra);
 }
+
 
 int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, char **tabuleiro) {
     // Verifica se a palavra contém apenas caracteres válidos (letras)
@@ -503,23 +546,96 @@ int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, ch
     }
     
 
+void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial)
+{
+    /**
+     * ! Novo 
+     * Funçao para inserir palavra horizontal ou vertical
+     */
+    int coluna = posicaoInicial[0] - 'A';
+    int linha = atoi(&posicaoInicial[1]) - 1; // atoi para converter corretamente para int
+    /**
+     * ! Decorar
+     * &posicaoInicial[1]: Este é o endereço do segundo elemento do array 
+     * posicaoInicial. Como o primeiro elemento contém a coluna (uma letra), o segundo elemento e os seguintes representam a linha (um ou mais números). O operador & retorna o endereço do elemento, então passamos esse endereço para a função atoi.
+     * atoi(&posicaoInicial[1]): A função atoi converte uma string de caracteres representando números inteiros em um valor inteiro. Neste caso, estamos passando a parte da string posicaoInicial que contém os números da linha. A função retorna o valor inteiro correspondente.
+     * atoi(&posicaoInicial[1]) - 1: Como os índices do array começam em 0, precisamos subtrair 1 do valor da linha para que ele corresponda à posição correta no array do tabuleiro. Por exemplo, se a linha inserida for 1, queremos que a posição no array seja 0.
+     */
 
-int pontuacaoPalavra(Game *g, char *palavra, char **tabuleiro, int linha, int coluna, char direcao) {
-    int pontos = 0;
-    int valorLetra[] = {2, 4, 3, 1, 2, 3, 1, 3, 2, 3, 7, 5, 4, 4, 2, 4, 6, 3, 3, 4, 6, 5, 9, 6, 7, 8};
-
-    for (int i = 0; palavra[i] != '\0'; i++) {
-        // Calcula a pontuação da letra atual
-        int letraIndex = palavra[i] - 'A';
-        pontos += valorLetra[letraIndex];
-
-        // Atualiza linha/coluna para a próxima letra, de acordo com a direção
-        if (direcao == 'H') {
-            coluna++;
-        } else {
-            linha++;
+    if (direcao == 'H')   //Horizontal
+    {
+        for (int i = 0; palavra[i] != '\0'; i++)
+        {
+            g->tabuleiro[linha][coluna + i] = palavra[i];
         }
     }
+    else if (direcao == 'V') //Vertical
+    {
+        for (int i = 0; palavra[i] != '\0'; i++)
+        {
+            g->tabuleiro[linha + i][coluna] = palavra[i];
+        }
+    }
+}
+
+
+int pontuacaoLetra(char letra) {
+    // Array que contém os valores de pontos de cada letra (A-Z) em ordem alfabética
+    int valorLetra[] = {2, 4, 3, 1, 2, 3, 1, 3, 2, 3, 7, 5, 4, 4, 2, 4, 6, 3, 3, 4, 6, 5, 9, 6, 7, 8};
+
+    // Calcula o índice da letra no array valorLetra (0 para 'A', 1 para 'B', etc.)
+    int letraIndex = letra - 'A';
+
+    // Retorna a pontuação da letra com base no índice calculado
+    return valorLetra[letraIndex];
+}
+
+int regrasMultiplicacao(Game *g, char *palavra, char **tabuleiro, int linha, int coluna, char direcao) {
+    int pontos = 0;
+    int multiplicadorPalavra = 1;
+
+    for (int i = 0; palavra[i] != '\0'; i++) {
+        int letraPontos = pontuacaoLetra(palavra[i]);
+
+        // Regra para multiplicar por 2
+        if (direcao == 'H' && tabuleiro[linha][coluna + i] == '2') {
+            letraPontos *= 2;
+        } else if (direcao == 'V' && tabuleiro[linha + i][coluna] == '2') {
+            letraPontos *= 2;
+        }
+
+        // Regra para multiplicar por 3
+        if (direcao == 'H' && tabuleiro[linha][coluna + i] == '3') {
+            letraPontos *= 3;
+        } else if (direcao == 'V' && tabuleiro[linha + i][coluna] == '3') {
+            letraPontos *= 3;
+        }
+
+         // Regra para multiplicar por 4
+        if (direcao == 'H' && tabuleiro[linha][coluna + i] == '4') {
+            letraPontos *= 4;
+        } else if (direcao == 'V' && tabuleiro[linha + i][coluna] == '4') {
+            letraPontos *= 4;
+        }
+
+        // Regra para duplicar palavra
+        if (direcao == 'H' && tabuleiro[linha][coluna + i] == '$') {
+            multiplicadorPalavra *= 2;
+        } else if (direcao == 'V' && tabuleiro[linha + i][coluna] == '$') {
+            multiplicadorPalavra *= 2;
+        }
+
+        // Regra para triplicar palavra
+        if (direcao == 'H' && tabuleiro[linha][coluna + i] == '!') {
+            multiplicadorPalavra *= 3;
+        } else if (direcao == 'V' && tabuleiro[linha + i][coluna] == '!') {
+            multiplicadorPalavra *= 3;
+        }
+
+        pontos += letraPontos;
+    }
+
+    pontos *= multiplicadorPalavra;
 
     return pontos;
 }

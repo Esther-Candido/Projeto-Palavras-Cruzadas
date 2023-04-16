@@ -35,6 +35,7 @@ typedef struct _game
 {
     int jogadasRealizadas;
     int score;//pontuação acumulada do jogo
+    
     char **tabuleiro;
     int endPlaying;
     //Opções de jogo
