@@ -250,7 +250,17 @@ void loadOptions(Game *g, int argc, char const *argv[])
             exit(EXIT_FAILURE);
             break;
         case 't':
-            if (i + 1 < argc) {
+            i ++;
+            int tamanhoTabuleiro = atoi(argv[i]);
+            if ((tamanhoTabuleiro % 2 == 0) || (tamanhoTabuleiro < 7 && tamanhoTabuleiro > 15)){
+                printHelp();
+                freeGame(g);
+                exit(EXIT_FAILURE);
+            }
+            g->dim = tamanhoTabuleiro;
+
+
+            /*if (i +1 < argc) {
                 int tamanhoTabuleiro = atoi(argv[++i]);
                 if (tamanhoTabuleiro >= 7 && tamanhoTabuleiro <= 15 && tamanhoTabuleiro % 2 != 0) {
                     g->dim = tamanhoTabuleiro;
@@ -259,14 +269,34 @@ void loadOptions(Game *g, int argc, char const *argv[])
                     exit(EXIT_FAILURE);
                 }
             }
+            */  //ANTIGO CASO QUEIRA VER
             break;
         case 'n':
-            if (i + 1 < argc) {
-                g->maxJogadas = atoi(argv[++i]);
+            // i ++ , quando entra no case n, passa para proxima casa que no caso é a quantidade de jogadas
+            i ++;
+            // Atribuicao do valor para NUMJOGADAS
+            int numjogadas = atoi(argv[i]);
+            if (numjogadas < 0){
+                printHelp();
+                freeGame(g);
+                exit(EXIT_FAILURE);
             }
+            //Definindo o numero maximo de jogadas
+            g->maxJogadas = numjogadas;
+
+
             break;
         case 'i':
-            //TODO: A fazer pelo aluno
+            i++;
+            FILE *filetabuleiro = fopen(argv[i],"r");
+            if (filetabuleiro == NULL)
+            {
+                printHelp();
+                freeGame(g);
+                exit(EXIT_FAILURE);
+            }
+            g->tabInicial = filetabuleiro;
+            
             break;
         case 'o':
            //TODO: A fazer pelo aluno
