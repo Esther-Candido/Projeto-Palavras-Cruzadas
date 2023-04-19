@@ -255,7 +255,7 @@ void loadOptions(Game *g, int argc, char const *argv[])
 {
     if (argc == 1)
         return;
-    
+    //teste
 
     for (int i = 1; i < argc; i++)
     {
