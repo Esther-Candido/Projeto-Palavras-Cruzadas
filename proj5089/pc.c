@@ -74,13 +74,25 @@ void criarTabuleiro(Game *g);   //!Feito
 void rules(Game *g); //! Novo
 
 /**
- * @brief Lê a posição inicial (coluna e linha) do comando fornecido pelo usuário.
- * @param g Ponteiro para a estrutura do jogo.
- * @param comando String com o comando inserido pelo usuário.
- * @param posicaoInicial String para armazenar a posição inicial (coluna e linha).
- * @return Retorna o índice atualizado após ler a posição inicial, caso contrário, retorna 0.
+ * @brief Lê a coluna do comando e verifica se está dentro dos limites do tabuleiro.
+ *
+ * @param comando Ponteiro para a string do comando inserido pelo usuário.
+ * @param posicaoInicial Ponteiro para a string que armazenará a posição inicial da palavra no tabuleiro.
+ * @param dim Dimensão do tabuleiro (número de linhas e colunas).
+ * @return Retorna o índice após a coluna na string do comando, ou -1 se a coluna for inválida.
  */
-int lerPosicaoInicial(Game *g,char *comando, char *posicaoInicial);  //! Novo
+int lerColuna(char *comando, char *posicaoInicial, int dim) ;  //! Novo
+
+/**
+ * @brief Lê a linha do comando e verifica se está dentro dos limites do tabuleiro.
+ *
+ * @param g Ponteiro para a estrutura do jogo, que contém informações como a dimensão do tabuleiro.
+ * @param comando Ponteiro para a string do comando inserido pelo usuário.
+ * @param index Índice na string do comando onde a leitura da linha deve começar.
+ * @param posicaoInicial Ponteiro para a string que armazenará a posição inicial da palavra no tabuleiro.
+ * @return Retorna o índice após a linha na string do comando, ou -1 se a linha for inválida.
+ */
+int lerLinha(Game *g, char *comando, int index, char *posicaoInicial); //! Novo
 
 /**
  * @brief Lê a direção (H ou V) do comando fornecido pelo usuário.
@@ -97,13 +109,13 @@ int lerDirecao(char *comando, int index, char *direcao) ;  //! Novo
  * @param index Índice atualizado após ler a posição inicial e a direção.
  * @param palavra Ponteiro para armazenar a palavra lida.
  */
-void lerPalavra(char *comando, int index, char *palavra) ;  //! Novo
+int lerPalavra(char *comando, int index, char *palavra) ; //! Novo
 
 /**
  * @brief Insere um comando no jogo e atualiza a pontuação do jogador.
  * @param g Ponteiro para a estrutura Game que contém informações do jogo.
  */
-void inserirComando(Game *g);  //! Novo
+int inserirComando(Game *g, char *col, int *line, char *dir, char **palavra) ;  //! Novo
 
 /**
  * @brief Valida se uma palavra pode ser inserida no tabuleiro na posição e direção especificadas.
@@ -192,10 +204,6 @@ void freeGame(Game *g)
         free(g->tabuleiro);
     }
 
-    
-
-   
-
     // Liberta a memória alocada para a estrutura Game
     free(g);
 }
@@ -203,36 +211,45 @@ void freeGame(Game *g)
 
 void playGame(Game *g)
 {   
-    
-    rules(g);  //!ruben 
+    char col;
+    int line;
+    char dir;
+    char *palavra;
 
-    // Mostra o tabuleiro
+    // Aloca memória para a palavra
+    palavra = (char *)malloc(20 * sizeof(char));
+
+    rules(g);
     printTabuleiro(g);
     
+    int pontos;
     do
     {
-     // Solicita ao utilizador para inserir o comando
-    inserirComando(g);
+        pontos = inserirComando(g, &col, &line, &dir, &palavra);
 
-    if (g->endPlaying == 1) {
-        printf("Jogo encerrado pelo jogador.\n");
-        break;
-    }
+        if (g->endPlaying == 1) {           
+            break;
+        }
 
-    // Mostra o tabuleiro com as palavras inseridas
-    printTabuleiro(g);  
-    printf("Jogada %d realizada.\n", g->jogadasRealizadas);
-    
+        if (pontos != -1) {
+            printTabuleiro(g);
+            PRINT_MOVE_INFO(g->jogadasRealizadas, col, line, dir, palavra, pontos);
+        }
         
-     } while (g->jogadasRealizadas < g->maxJogadas || g->maxJogadas==NOT_DEFINED);
+    } while (g->jogadasRealizadas < g->maxJogadas || g->maxJogadas==NOT_DEFINED);
 
      PRINT_FINAL_SCORE(g->score);
-   
-    
-    // TODO: Função que joga o jogo.
-    // !Pode invocar outras funçoes que serão criadas pelos alunos
-}
 
+    // Salva o tabuleiro final e a pontuação no arquivo
+    salvaTabuleiroFinal(g);
+
+    // Libera a memória alocada para a palavra
+    free(palavra);
+
+    // Fecha os arquivos abertos (tabInicial e tabFinal)
+    if (g->tabInicial) fclose(g->tabInicial);
+    if (g->tabFinal) fclose(g->tabFinal);
+}
 
 void loadOptions(Game *g, int argc, char const *argv[])
 {
@@ -250,56 +267,47 @@ void loadOptions(Game *g, int argc, char const *argv[])
             exit(EXIT_FAILURE);
             break;
         case 't':
-            i ++;
-            int tamanhoTabuleiro = atoi(argv[i]);
-            if ((tamanhoTabuleiro % 2 == 0) || (tamanhoTabuleiro < 7 && tamanhoTabuleiro > 15)){
-                printHelp();
-                freeGame(g);
-                exit(EXIT_FAILURE);
-            }
-            g->dim = tamanhoTabuleiro;
-
-
-            /*if (i +1 < argc) {
+            if (i + 1 < argc) {
                 int tamanhoTabuleiro = atoi(argv[++i]);
                 if (tamanhoTabuleiro >= 7 && tamanhoTabuleiro <= 15 && tamanhoTabuleiro % 2 != 0) {
                     g->dim = tamanhoTabuleiro;
                 } else {
-                    printf("Dimensão do tabuleiro inválida. Insira um número ímpar entre 7 e 15.\n");
+                    printHelp();
+                    freeGame(g);
                     exit(EXIT_FAILURE);
                 }
             }
-            */  //ANTIGO CASO QUEIRA VER
             break;
         case 'n':
-            // i ++ , quando entra no case n, passa para proxima casa que no caso é a quantidade de jogadas
-            i ++;
-            // Atribuicao do valor para NUMJOGADAS
-            int numjogadas = atoi(argv[i]);
-            if (numjogadas < 0){
+            i++;
+            int n = atoi(argv[i]);
+            if (n<0){
                 printHelp();
                 freeGame(g);
                 exit(EXIT_FAILURE);
             }
-            //Definindo o numero maximo de jogadas
-            g->maxJogadas = numjogadas;
-
+            g->maxJogadas = n;
 
             break;
         case 'i':
             i++;
-            FILE *filetabuleiro = fopen(argv[i],"r");
-            if (filetabuleiro == NULL)
-            {
+            FILE *f1 = fopen(argv[i], "r");
+            if (f1 == NULL){
                 printHelp();
                 freeGame(g);
                 exit(EXIT_FAILURE);
             }
-            g->tabInicial = filetabuleiro;
-            
+            g->tabInicial=f1;
             break;
         case 'o':
-           //TODO: A fazer pelo aluno
+           i++;
+                FILE *f2 = fopen(argv[i], "w");
+                if (f2 == NULL){
+                    printHelp();
+                    freeGame(g);
+                    exit(EXIT_FAILURE);
+                }
+                g->tabFinal = f2;
             break;
         default:
             printHelp();
@@ -317,6 +325,14 @@ void criarTabuleiroFromFile(Game *g)
      * TODO: A fazer pelo aluno
      * Terá que ler oo ficheiro e criar a matriz tabuleiro
      */
+    g->tabuleiro=malloc(sizeof(char *)*g->dim);
+    for (int i = 0; i < g->dim; i++)
+    {
+        g->tabuleiro[i]=malloc(sizeof(char)*(g->dim+1));
+        memset(g->tabuleiro[i],".",g->dim);
+        g->tabuleiro[g->dim]='\0';
+    }
+    
 }
 
 
@@ -359,24 +375,28 @@ void rules(Game *g){
 }
 
 
-int lerPosicaoInicial(Game *g,char *comando, char *posicaoInicial) {
-    /**
-     * ! Novo
-     * Função para ler a coluna e a linha
-     */
-
+int lerColuna(char *comando, char *posicaoInicial, int dim) {
     // Verifica se o primeiro caractere é uma letra
     if (!isalpha(comando[0])) {
         printf("Erro: A coluna deve ser uma letra.\n");
-        return 0;
+        return -1;
     }
 
+    // Verifica se a letra está dentro dos limites do tabuleiro
+    if (comando[0] < 'A' || comando[0] >= 'A' + dim) {
+        printf("Erro: A coluna está fora dos limites do tabuleiro.\n");
+        return -1;
+    }
 
     // Armazena a coluna na posição inicial
     posicaoInicial[0] = comando[0];
 
+    return 1; // Retorna o índice após a coluna
+}
+
+
+int lerLinha(Game *g, char *comando, int index, char *posicaoInicial) {
     // Lê a linha da posição inicial
-    int index = 1;
     int i = 0;
     char tmp[3];
     while (isdigit(comando[index])) {
@@ -387,8 +407,8 @@ int lerPosicaoInicial(Game *g,char *comando, char *posicaoInicial) {
     // Verifica se a linha é válida
     int linha = atoi(tmp); // atoi converte uma string em numeros
     if (linha < 1 || linha > g->dim) {
-        printf("Erro: A linha deve ser um número entre 1 e %d.\n", g->dim);
-        return 0;
+        printf("Erro: A Linha deve ser um numero.\n");   
+        return -1;
     }
 
     // Armazena a linha na posição inicial
@@ -405,105 +425,108 @@ int lerDirecao(char *comando, int index, char *direcao) {
 
     // Verifica se a direção é válida
     if (*direcao != 'H' && *direcao != 'V') {
-        printf("Erro: A direção deve ser 'H' ou 'V'.\n");
-        return 0;
+        printf("Erro: A direçao deve ser h ou V.\n");
+        return -1;
     }
 
     return 1;
 }
 
 
-void lerPalavra(char *comando, int index, char *palavra) {
+int lerPalavra(char *comando, int index, char *palavra) {
+    // Encontra o índice da posição do espaço no comando
+    while (comando[index] != ' ' && comando[index] != '\0') {
+        index++;
+    }
+
+    // Verifica se encontrou um espaço
+    if (comando[index] != ' ') {
+         printf("Erro: Deve ter um espaço.\n");
+        return -1;
+    }
+
+    // Incrementa o índice para pular o espaço
+    index++;
 
     // Copia a palavra do comando para a variável palavra
-    strcpy(palavra, &comando[index + 1]);
+    strcpy(palavra, comando + index);
+
+
+    return index;
 }
 
 
-void inserirComando(Game *g)
+int inserirComando(Game *g, char *col, int *line, char *dir, char **palavra) 
 {
     // Aloca memória para as variáveis
     char *comando = (char *)malloc(30 * sizeof(char));
     char *posicaoInicial = (char *)malloc(4 * sizeof(char));
-    char direcao;
-    char *palavra = (char *)malloc(20 * sizeof(char));
-    int coluna, linha;
+    int index;
 
     // Lê o comando do usuário
-    printf("Insira comando-> ");
+    printf(ASK_COMMAND);
     fgets(comando, 30, stdin);
     comando[strcspn(comando, "\n")] = 0; // Remove o caractere de nova linha
 
-    remove_spaces(comando);
-
-    
     // Converte o comando para maiúsculas
     to_upper(comando);
 
-    // Verifica se o comando é "end"
-      if (strcmp(comando, "END") == 0) {
+   if (strcmp(comando, "END") == 0) {
         g->endPlaying = 1;
-        free(comando);
-        free(posicaoInicial);
-        free(palavra);
-        return;
+        return -1;
     }
 
+    index = lerColuna(comando, posicaoInicial, g->dim);
 
-    // Lê a posição inicial (coluna e linha)
-    int index = lerPosicaoInicial(g, comando, posicaoInicial);
-
-    if (index == 0) {
-        free(comando);
-        free(posicaoInicial);
-        free(palavra);
-        return;
+    if (index == -1) {
+        return -1;
     }
 
-    // Inicializa a linha e a coluna com os valores da posição inicial
-    coluna = posicaoInicial[0] - 'A';
-    linha = atoi(&posicaoInicial[1]) - 1;
+    index = lerLinha(g, comando, index, posicaoInicial);
+    if (index == -1) {
+        return -1;
+    }
 
     // Lê a direção (H ou V)
-    if (!lerDirecao(comando, index, &direcao)) {
-        free(comando);
-        free(posicaoInicial);
-        free(palavra);
-        return;
+    if (!lerDirecao(comando, index, dir)) {
+        return -1;
     }
 
-    // Lê a palavra a ser inserida
-    lerPalavra(comando, index, palavra);
+    index++;
 
-    if (!validarPalavra(g, palavra, direcao, posicaoInicial, g->tabuleiro)) {
-        free(comando);
-        free(posicaoInicial);
-        free(palavra);
-        return;
+    // Lê a palavra a ser inserida
+    index = lerPalavra(comando, index, *palavra);
+    if (index <= -1) {
+        return -1;
+    }
+
+    if (!validarPalavra(g, *palavra, *dir, posicaoInicial, g->tabuleiro)) {
+        return -1;
     }
 
     // Inicializa a linha e a coluna com os valores da posição inicial
-    coluna = posicaoInicial[0] - 'A';
-    linha = atoi(&posicaoInicial[1]) - 1;
+    int coluna = posicaoInicial[0] - 'A';
+    int linha = atoi(&posicaoInicial[1]) - 1;
 
     // Calcula a pontuação da palavra antes de inseri-la no tabuleiro usando a função regrasMultiplicacao
-    int pontos = regrasMultiplicacao(g, palavra, g->tabuleiro, linha, coluna, direcao);
+    int pontos = regrasMultiplicacao(g, *palavra, g->tabuleiro, linha, coluna, *dir);
 
     // Insere a palavra no tabuleiro
-    inserirPalavra(g, palavra, direcao, posicaoInicial);
+    inserirPalavra(g, *palavra, *dir, posicaoInicial);
 
     // Atualiza a pontuação do jogador e incrementa o número de jogadas realizadas
     g->jogadasRealizadas++;
     g->score += pontos;
 
-    // Exibe a pontuação do jogador
-    printf("Pontos obtidos nesta jogada: %d\n", pontos);
-    printf("Pontuação total: %d\n", g->score);
+    // Preenche os valores nos ponteiros
+    *col = posicaoInicial[0];
+    *line = linha + 1;
 
     // Libera a memória alocada
     free(comando);
     free(posicaoInicial);
-    free(palavra);
+
+    return pontos;
 }
 
 
@@ -511,14 +534,14 @@ int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, ch
     // Verifica se a palavra contém apenas caracteres válidos (letras)
     for (int j = 0; palavra[j] != '\0'; j++) {
         if (!isalpha(palavra[j])) {
-            printf("Erro: A palavra deve conter apenas letras.\n");
+            printf("Erro: Apenas letras.\n"); 
             return 0;
         }
     }
 
     // Verifica se a palavra tem pelo menos 2 caracteres
     if (strlen(palavra) < 3) {
-        printf("Erro: A palavra deve ter pelo menos 2 caracteres.\n");
+        printf("Erro: Mais de 2 caracteres.\n");
         return 0;
     }
 
@@ -529,12 +552,12 @@ int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, ch
 
     if (direcao == 'H') {
         if (coluna + tamanho_palavra > g->dim) {
-            printf("Erro: A palavra excede o limite do tabuleiro.\n");
+            printf("Erro: Direçao incorreta.\n");; 
             return 0;
         }
     } else { // direcao == 'V'
         if (linha + tamanho_palavra > g->dim) {
-            printf("Erro: A palavra excede o limite do tabuleiro.\n");
+            printf("Erro: Direçao incorreta.\n");;  
             return 0;
         }
     }
@@ -545,20 +568,20 @@ int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, ch
     for (int i = 0; palavra[i] != '\0'; i++) {
         if (direcao == 'H') {
             if (isalpha(tabuleiro[linha][coluna + i]) && tabuleiro[linha][coluna + i] != palavra[i]) {
-                printf("Erro: A posição já está ocupada por outra letra.\n");
+                 printf("Erro: Demasiadas letras iguais.\n");
                 return 0;
             } else if (tabuleiro[linha][coluna + i] == '#') {
-                printf("Erro: A posição está ocupada pelo símbolo '#'.\n");
+                printf("Erro: Erro ##.\n");
                 return 0;
             } else if (tabuleiro[linha][coluna + i] == palavra[i]) {
                 letrasIguais++;
             }
         } else { // direcao == 'V'
             if (isalpha(tabuleiro[linha + i][coluna]) && tabuleiro[linha + i][coluna] != palavra[i]) {
-                printf("Erro: A posição já está ocupada por outra letra.\n");
+                printf("Erro: Demasiadas letras iguais.\n");
                 return 0;
             } else if (tabuleiro[linha + i][coluna] == '#') {
-                printf("Erro: A posição está ocupada pelo símbolo '#'.\n");
+                printf("Erro: ##.\n");
                 return 0;
             } else if (tabuleiro[linha + i][coluna] == palavra[i]) {
                 letrasIguais++;
@@ -567,7 +590,7 @@ int validarPalavra(Game *g,char *palavra, char direcao, char *posicaoInicial, ch
     }
 
     if (letrasIguais > 1) {
-        printf("Erro: Apenas uma letra pode ser igual.\n");
+        printf("Erro: Demasiadas letras iguais.\n");
         return 0;
     }
 
