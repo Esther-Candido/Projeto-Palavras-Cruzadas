@@ -35,8 +35,17 @@ void to_upper(char *str);  //! Novo
  */
 void loadOptions(Game *g, int argc, char const *argv[]); //!Feito
 
+/**
+ * Liberta a memória alocada para a estrutura Game e seu tabuleiro.
+ * @param g: Ponteiro para a estrutura Game que armazena o tabuleiro e sua dimensão.
+ */
 void freeGame(Game *g); //!Feito
 
+/**
+ * Função para criar um tabuleiro de jogo a partir de um arquivo.
+ * @param g: Ponteiro para a estrutura Game que armazena o tabuleiro e sua dimensão.
+ * @param file: Ponteiro para o arquivo que contém a configuração do tabuleiro.
+ */
 void criarTabuleiroFromFile(Game *g, FILE *file); //!Feito
 
 /**
@@ -103,6 +112,13 @@ int lerDirecao(char *comando, int index, char *direcao) ;  //! Novo
  * @param palavra Ponteiro para armazenar a palavra lida.
  */
 int lerPalavra(char *comando, int index, char *palavra) ; //! Novo
+
+/**
+ * Verifica se existem espaços vazios consecutivos (3 ou mais) ou se há um caractere '!' no tabuleiro.
+ * @param g: Ponteiro para a estrutura Game que armazena o tabuleiro e sua dimensão.
+ * @return: Retorna 1 se houver espaços vazios consecutivos ou '!' encontrado, caso contrário, retorna 0.
+ */
+int verificarEspacosVazios(Game *g);
 
 /**
  * @brief Insere um comando no jogo e atualiza a pontuação do jogador.
@@ -532,10 +548,10 @@ int inserirComando(Game *g, char *col, int *line, char *dir, char *palavra)
 
     // Lê a direção (H ou V)
     if (!lerDirecao(comando, index, dir)) {
-        return -1;
         free(comando);
         free(posicaoInicial);
-    }
+        return -1;
+    } 
 
     index++;
 
@@ -563,6 +579,18 @@ int inserirComando(Game *g, char *col, int *line, char *dir, char *palavra)
     // Insere a palavra no tabuleiro
     inserirPalavra(g, palavra, *dir, posicaoInicial);
 
+    if (!verificarEspacosVazios(g)) {
+        printf("Não há espaço suficiente no tabuleiro. O jogo será encerrado.\n");
+        
+        // Imprime o tabuleiro antes de encerrar o jogo
+        printTabuleiro(g);
+        
+        g->endPlaying = 1;
+        free(comando);
+        free(posicaoInicial);
+        return -1;
+    }
+
 
     // Atualiza a pontuação do jogador e incrementa o número de jogadas realizadas
     g->jogadasRealizadas++;
@@ -577,6 +605,59 @@ int inserirComando(Game *g, char *col, int *line, char *dir, char *palavra)
     free(posicaoInicial);
 
     return pontos;
+}
+
+
+int verificarEspacosVazios(Game *g) {
+    int espacosVaziosConsecutivos;
+    int exclamationMarkFound = 0;
+
+    // Verifica linhas
+    for (int i = 0; i < g->dim; i++) {
+        espacosVaziosConsecutivos = 0;
+        for (int j = 0; j < g->dim; j++) {
+            if (g->tabuleiro[i][j] == ' ') {
+                espacosVaziosConsecutivos++;
+            } else {
+                espacosVaziosConsecutivos = 0;
+            }
+
+            if (g->tabuleiro[i][j] == '!') {
+                exclamationMarkFound = 1;
+            }
+
+            if (espacosVaziosConsecutivos >= 3) {
+                return 1;
+            }
+        }
+    }
+
+    // Verifica colunas
+    for (int i = 0; i < g->dim; i++) {
+        espacosVaziosConsecutivos = 0;
+        for (int j = 0; j < g->dim; j++) {
+            if (g->tabuleiro[j][i] == ' ') {
+                espacosVaziosConsecutivos++;
+            } else {
+                espacosVaziosConsecutivos = 0;
+            }
+
+            if (g->tabuleiro[j][i] == '!') {
+                exclamationMarkFound = 1;
+            }
+
+            if (espacosVaziosConsecutivos >= 3) {
+                return 1;
+            }
+        }
+    }
+
+    // Retorna 0 se não houver espaços vazios consecutivos e nenhum '!' encontrado
+    if (!exclamationMarkFound) {
+        return 0;
+    }
+
+    return 1;
 }
 
 
@@ -612,36 +693,37 @@ int validarPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial, c
         }
     }
 
+    
     int letrasIguais = 0;
-
-    for (int i = 0; palavra[i] != '\0'; i++) {
-        if (direcao == 'H') {
-            if (isalpha(tabuleiro[linha][coluna + i]) && tabuleiro[linha][coluna + i] != palavra[i]) {
-                printf("Erro: Letra incompatível no tabuleiro.\n");
-                return 0;
-            } else if (tabuleiro[linha][coluna + i] == '#') {
-                printf("Erro: Erro ##.\n");
-                return 0;
-            } else if (tabuleiro[linha][coluna + i] == palavra[i]) {
-                letrasIguais++;
-            }
-        } else { // direcao == 'V'
-            if (isalpha(tabuleiro[linha + i][coluna]) && tabuleiro[linha + i][coluna] != palavra[i]) {
-                printf("Erro: Letra incompatível no tabuleiro.\n");
-                return 0;
-            } else if (tabuleiro[linha + i][coluna] == '#') {
-                printf("Erro: ##.\n");
-                return 0;
-            } else if (tabuleiro[linha + i][coluna] == palavra[i]) {
-                letrasIguais++;
-            }
+for (int i = 0; palavra[i] != '\0'; i++) {
+    if (direcao == 'H') {
+        if (isalpha(tabuleiro[linha][coluna + i]) && tabuleiro[linha][coluna + i] != palavra[i]) {
+            printf("Erro: Letra incompatível no tabuleiro.\n");
+            return 0;
+        } else if (tabuleiro[linha][coluna + i] == '#') {
+            printf("Erro: Erro ##.\n");
+            return 0;
+        } else if (tabuleiro[linha][coluna + i] == palavra[i]) {
+            letrasIguais++;
+        }
+    } else { // direcao == 'V'
+        if (isalpha(tabuleiro[linha + i][coluna]) && tabuleiro[linha + i][coluna] != palavra[i]) {
+            printf("Erro: Letra incompatível no tabuleiro.\n");
+            return 0;
+        } else if (tabuleiro[linha + i][coluna] == '#') {
+            printf("Erro: ##.\n");
+            return 0;
+        } else if (tabuleiro[linha + i][coluna] == palavra[i]) {
+            letrasIguais++;
         }
     }
+}
 
-    if (letrasIguais > 1) {
-        printf("Erro: Demasiadas letras iguais.\n");
-        return 0;
-    }
+if (letrasIguais == strlen(palavra)) {
+    printf("Erro: Palavras iguais não são permitidas.\n");
+    return 0;
+}
+
 
     return 1;
 }
