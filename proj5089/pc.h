@@ -1,8 +1,8 @@
 /**
  * @file pc.c
- * @author your name 
- * @brief description of file
- * @date ?????
+ * @author Ruben Alves, Eliseu Candido, Esther Candido
+ * @brief Tabuleiro de palavras cruzadas
+ * @date 2023-04-20
  * 
  */
 
