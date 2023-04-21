@@ -239,24 +239,23 @@ void playGame(Game *g)
     {
         pontos = inserirComando(g, &col, &line, &dir, palavra);
 
+        printTabuleiro(g);
+             
+        if (pontos != -1)
+        {   printf("PASSOU NA JOGADA");
+            PRINT_MOVE_INFO(g->jogadasRealizadas, col, line, dir, palavra, pontos);
+        }
+
         // Verifica se há apenas um ponto restante no tabuleiro
-        if (verificarEspacosVazios(g) == 1) {
-            printf("Apenas um ponto restante no tabuleiro! Jogo encerrado.\n");
-            printTabuleiro(g);
+        if (verificarEspacosVazios(g) <= 1 ) {
+            printf("FECHOU NO VERIFICAR ESPACO");
             break;
         }
 
         if (g->endPlaying == 1)
-        {           
+        {  printf("FECHOU NO END");
             break;
         }
-
-        if (pontos != -1)
-        {
-            printTabuleiro(g);
-            PRINT_MOVE_INFO(g->jogadasRealizadas, col, line, dir, palavra, pontos);
-        }
-
     } while (g->jogadasRealizadas < g->maxJogadas || g->maxJogadas == NOT_DEFINED);
 
     PRINT_FINAL_SCORE(g->score);
@@ -587,23 +586,11 @@ int inserirComando(Game *g, char *col, int *line, char *dir, char *palavra)
 
     // Insere a palavra no tabuleiro
     inserirPalavra(g, palavra, *dir, posicaoInicial);
-
-    if (!verificarEspacosVazios(g)) {
-        printf("Não há espaço suficiente no tabuleiro. O jogo será encerrado.\n");
-        
-        // Imprime o tabuleiro antes de encerrar o jogo
-        printTabuleiro(g);
-        
-        g->endPlaying = 1;
-        free(comando);
-        free(posicaoInicial);
-        return -1;
-    }
-
-
+    
     // Atualiza a pontuação do jogador e incrementa o número de jogadas realizadas
     g->jogadasRealizadas++;
     g->score += pontos;
+
 
     // Preenche os valores nos ponteiros
     *col = posicaoInicial[0];
