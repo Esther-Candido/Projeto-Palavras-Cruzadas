@@ -36,7 +36,8 @@ typedef struct _game
     int jogadasRealizadas;
     int score;//pontuação acumulada do jogo
     char **tabuleiro;
-    int endPlaying;
+    int endPlaying; //! novo
+    
     //Opções de jogo
     
     int dim;//dimensão do tabuleiro. Ou é dado ou calculado quando o tabuleiro é criado a partir de um ficheiro

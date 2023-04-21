@@ -36,8 +36,9 @@ void to_upper(char *str);  //! Novo
 void loadOptions(Game *g, int argc, char const *argv[]); //!Feito
 
 /**
- * Liberta a memória alocada para a estrutura Game e seu tabuleiro.
+ * Função para criar um tabuleiro de jogo a partir de um arquivo.
  * @param g: Ponteiro para a estrutura Game que armazena o tabuleiro e sua dimensão.
+ * @param file: Ponteiro para o arquivo que contém a configuração do tabuleiro.
  */
 void freeGame(Game *g); //!Feito
 
@@ -238,6 +239,13 @@ void playGame(Game *g)
     {
         pontos = inserirComando(g, &col, &line, &dir, palavra);
 
+        // Verifica se há apenas um ponto restante no tabuleiro
+        if (verificarEspacosVazios(g) == 1) {
+            printf("Apenas um ponto restante no tabuleiro! Jogo encerrado.\n");
+            printTabuleiro(g);
+            break;
+        }
+
         if (g->endPlaying == 1)
         {           
             break;
@@ -263,6 +271,7 @@ void playGame(Game *g)
     if (g->tabInicial) fclose(g->tabInicial);
     if (g->tabFinal) fclose(g->tabFinal);
 }
+
 
 
 void loadOptions(Game *g, int argc, char const *argv[])
@@ -609,56 +618,21 @@ int inserirComando(Game *g, char *col, int *line, char *dir, char *palavra)
 
 
 int verificarEspacosVazios(Game *g) {
-    int espacosVaziosConsecutivos;
-    int exclamationMarkFound = 0;
+    int pontosRestantes = 0;
 
-    // Verifica linhas
+    // Verifica linhas e colunas
     for (int i = 0; i < g->dim; i++) {
-        espacosVaziosConsecutivos = 0;
         for (int j = 0; j < g->dim; j++) {
-            if (g->tabuleiro[i][j] == ' ') {
-                espacosVaziosConsecutivos++;
-            } else {
-                espacosVaziosConsecutivos = 0;
-            }
-
-            if (g->tabuleiro[i][j] == '!') {
-                exclamationMarkFound = 1;
-            }
-
-            if (espacosVaziosConsecutivos >= 3) {
-                return 1;
+            if (g->tabuleiro[i][j] == '.') {
+                pontosRestantes++;
             }
         }
     }
 
-    // Verifica colunas
-    for (int i = 0; i < g->dim; i++) {
-        espacosVaziosConsecutivos = 0;
-        for (int j = 0; j < g->dim; j++) {
-            if (g->tabuleiro[j][i] == ' ') {
-                espacosVaziosConsecutivos++;
-            } else {
-                espacosVaziosConsecutivos = 0;
-            }
-
-            if (g->tabuleiro[j][i] == '!') {
-                exclamationMarkFound = 1;
-            }
-
-            if (espacosVaziosConsecutivos >= 3) {
-                return 1;
-            }
-        }
-    }
-
-    // Retorna 0 se não houver espaços vazios consecutivos e nenhum '!' encontrado
-    if (!exclamationMarkFound) {
-        return 0;
-    }
-
-    return 1;
+    // Retorna a quantidade de pontos restantes no tabuleiro
+    return pontosRestantes;
 }
+
 
 
 int validarPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial, char **tabuleiro) {
