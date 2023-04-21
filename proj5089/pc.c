@@ -166,7 +166,7 @@ int regrasMultiplicacao(Game *g, char *palavra, char **tabuleiro, int linha, int
  */
 void inserirPalavra(Game *g, char *palavra, char direcao, char *posicaoInicial);  //! Novo
 
-
+void remove_spaces(char *s);
 
 
 
@@ -196,7 +196,10 @@ Game *newGame(int argc, char const *argv[])
         criarTabuleiro(g);
 
     // devolve jogo
-    
+    printf("\n print do tabuleiro criado\n");
+    printTabuleiro(g);
+    printf("\n terminoooo \n\n");
+
     return g;
 }
 
@@ -231,14 +234,17 @@ void playGame(Game *g)
     // Aloca memória para a palavra
     palavra = (char *)malloc(20 * sizeof(char));
 
-    rules(g);
+    if (g->tabInicial == NULL)
+    {
+        rules(g);
+    }
+    
     printTabuleiro(g);
 
     int pontos;
     do
     {
         pontos = inserirComando(g, &col, &line, &dir, palavra);        
-        
         if (g->endPlaying == 1)
         {  printf("FECHOU NO END");
             break;
@@ -354,7 +360,6 @@ void criarTabuleiroFromFile(Game *g, FILE *file)
         return;
     }
 
-    // Conta o número de linhas no arquivo para determinar a dimensão do tabuleiro
     char c;
     int line_count = 0;
     while ((c = fgetc(file)) != EOF)
@@ -366,7 +371,7 @@ void criarTabuleiroFromFile(Game *g, FILE *file)
     }
     g->dim = line_count;
 
-    // Aloca espaço de memória para o tabuleiro
+  
     g->tabuleiro = malloc(sizeof(char *) * g->dim);
     for (int i = 0; i < g->dim; i++)
     {
@@ -376,16 +381,29 @@ void criarTabuleiroFromFile(Game *g, FILE *file)
     // Retorna o ponteiro do arquivo para o início
     fseek(file, 0, SEEK_SET);
 
-    // Lê o arquivo e preenche o tabuleiro
+    char line[254];
     for (int i = 0; i < g->dim; i++)
     {
+        fgets(line, sizeof(line), file); // Lê uma linha do arquivo
+        remove_spaces(line);            // Remove os espaços da linha
+        printf("\n\n print ==== %s",line);
+
+
         for (int j = 0; j < g->dim; j++)
         {
-            fscanf(file, " %c", &g->tabuleiro[i][j]);
+            // Quando a coluna passa de 9 para 10, entra nesse if , e pula dois caracteres no caso (10) ++
+            if (i >= 9)
+            {   
+                g->tabuleiro[i][j] = line[j + 2]; // Copia o caractere para o tabuleiro, ignorando o primeiro caractere
+                continue;
+            }
+            
+            g->tabuleiro[i][j] = line[j + 1]; // Copia o caractere para o tabuleiro, ignorando o primeiro caractere
         }
     }
 
 }
+
 
 
 void criarTabuleiro(Game *g)
@@ -797,4 +815,24 @@ void to_upper(char *str)
 }
 
 
+void remove_spaces(char *s)
 
+{
+
+char *d = s;
+
+do
+
+{
+
+while (*d == ' ')
+
+{
+
+++d;
+
+}
+
+} while ((*s++ = *d++));
+
+}
