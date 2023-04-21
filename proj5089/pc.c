@@ -237,7 +237,12 @@ void playGame(Game *g)
     int pontos;
     do
     {
-        pontos = inserirComando(g, &col, &line, &dir, palavra);
+        pontos = inserirComando(g, &col, &line, &dir, palavra);        
+        
+        if (g->endPlaying == 1)
+        {  printf("FECHOU NO END");
+            break;
+        }
 
         printTabuleiro(g);
              
@@ -252,10 +257,7 @@ void playGame(Game *g)
             break;
         }
 
-        if (g->endPlaying == 1)
-        {  printf("FECHOU NO END");
-            break;
-        }
+
     } while (g->jogadasRealizadas < g->maxJogadas || g->maxJogadas == NOT_DEFINED);
 
     PRINT_FINAL_SCORE(g->score);
