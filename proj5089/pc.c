@@ -195,11 +195,6 @@ Game *newGame(int argc, char const *argv[])
     else
         criarTabuleiro(g);
 
-    // devolve jogo
-    printf("\n print do tabuleiro criado\n");
-    printTabuleiro(g);
-    printf("\n terminoooo \n\n");
-
     return g;
 }
 
@@ -386,15 +381,14 @@ void criarTabuleiroFromFile(Game *g, FILE *file)
     {
         fgets(line, sizeof(line), file); // Lê uma linha do arquivo
         remove_spaces(line);            // Remove os espaços da linha
-        printf("\n\n print ==== %s",line);
 
-
+        // COLUNA DO TABULEIRO
         for (int j = 0; j < g->dim; j++)
         {
-            // Quando a coluna passa de 9 para 10, entra nesse if , e pula dois caracteres no caso (10) ++
+            // LINHA DO TABULEIRO
             if (i >= 9)
             {   
-                g->tabuleiro[i][j] = line[j + 2]; // Copia o caractere para o tabuleiro, ignorando o primeiro caractere
+                g->tabuleiro[i][j] = line[j + 2]; // Copia o caractere para o tabuleiro, ignorando os dois primeiros caracteres
                 continue;
             }
             
