@@ -15,6 +15,9 @@
 
 #define DIMENSION_DEFAULT 9 //Dimensão do tabuleiro default
 #define NOT_DEFINED -1   
+#define HORIZONTAL 'H'
+#define VERTICAL 'V'
+#define SPACE ' '
 
 // Simbolos de Tabuleiro
 #define SYMBOL_EMPTY '.'
@@ -65,7 +68,6 @@ Game *newGame(int argc, char const *argv[]);
  * @param g Jogo
  */
 void freeGame(Game *g);
-
 
 
 /**
