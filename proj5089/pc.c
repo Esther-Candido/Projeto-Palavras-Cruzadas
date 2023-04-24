@@ -380,6 +380,7 @@ void criarTabuleiroFromFile(Game *g, FILE *file)
     }
 
     // Conta o número de linhas no arquivo para determinar a dimensão do tabuleiro
+    //EOF -> constante que indica fim do ficheiro
     while ((c = fgetc(file)) != EOF)
     {
         if (c == '\n')
@@ -503,12 +504,9 @@ int lerLinha(Game *g, char *comando, int index, char *posicaoInicial) {
     char tmp[4] = {0};
 
     // Enquanto o caractere na posição "index" do comando for um dígito
-    while (isdigit(comando[index])) {
-        // Se i for menor que 3, adiciona o caractere ao array tmp e incrementa i
-        if (i < 3) {
-            tmp[i++] = comando[index];
-        }
-        index++; 
+   for (i = 0; isdigit(comando[index]) && i < 3; i++, index++) {
+        // Adiciona o caractere ao array tmp
+        tmp[i] = comando[index];
     }
 
     // Converte a string em tmp para um número inteiro
