@@ -121,8 +121,7 @@ O programa deverá ser invocado na linha de comando da seguinte forma: `$ ./pala
 - **-h**: Mostra ajuda ao utilizador. Já se encontra implementado no código fornecido aos alunos
 - **-t nn**: Dimensão do tabuleiro (n representa um inteiro ímpar entre 7 e 15);
 - **-i filename**: Ficheiro onde está o tabuleiro a ser carregado para o jogo, em vez do tabuleiro padrão. Quando é carregado um tabuleiro, tem que ser calculada a sua dimensão e a dimensão do tabuleiro (opção -t) fica sem efeito, mesmo que inserida.
-- **-n nn:** Número máximo de jogadas a jogar. Quando não definido joga-se até no ser possível inserir mais palavras (não há espaços livres sem letras) ou o utilizador inserir `end`. *Atenção!! caso o número máximo de jogadas esteja definido, o utilizador pode sempre acabar o jogo através do comando `end`*.
-- **-o filename**: define ficheiro onde escrever o tabuleiro final e pontuação final do jogo. Quando não definido não guarda o tabuleiro final e informação do jogo (após última jogada e antes de sair do programa), mas em qualquer das situações escreve essa informação no `stdout`. Caso tenha sido definido o ficheiro é criado (caso não exista) e é guardado essa informação. Abaixo um possível exemplo de um ficheiro desses
+- **-n nn:** Número máximo de jogadas a jogar. Quando não definido joga-se até no ser possível inserir mais palavras (não há espaços livres sem letras) ou o utilizador inserir `end`. *Atenção!! caso o número máximo de jogadas esteja definido, o utilizador pode sempre acabar o jogo através do comando `end`*..
 
 ```text
  1 $ . . . 3 . . . p 
@@ -274,5 +273,5 @@ O projeto será cotado para 20 valores, distribuídos da seguinte forma:
 - Qualidade do código e opções tomadas (algoritmos implementados) - 3 val
 - Gestão da memória (malloc, free e erros no valgrind) - 2 val
 - Testes automáticos (a ver com as saídas do programa) - 12 val, distribuídos da seguinte forma
-- Apresentação oral (com direito a questões), individualmente para cada elemento do grupo, consoante o nível de conhecimento das soluções apresentadas: **Até -5 valores**. Nota 0 significa que o formador percebe e reconhece que o formando trabalhou ativamente e conhece o código efetuado e as soluções implementadas. 
+- Apresentação oral (com direito a questões), individualmente para cada elemento do grupo, consoante o nível de conhecimento das soluções apresentadas: **Até -5 valores**. Nota 20 significa que o formador percebe e reconhece que o formando trabalhou ativamente e conhece o código efetuado e as soluções implementadas. 
 

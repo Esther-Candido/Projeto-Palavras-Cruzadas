@@ -370,7 +370,7 @@ void criarTabuleiroFromFile(Game *g, FILE *file)
 {
     char c;
     int line_count = 0;
-    char line[254]; // Variável para armazenar cada linha lida do arquivo
+    char line[35]; // Variável para armazenar cada linha lida do arquivo
 
     // Verifica se o arquivo é válido
     if (file == NULL)
