@@ -256,7 +256,7 @@ void criarTabuleiroFromFile(Game *g, FILE *file)
     }
 
     // Retorna o ponteiro do arquivo para o início
-    fseek(file, 0, SEEK_SET);
+    rewind(file);
 
 
     for (int i = 0; i < g->dim; i++)
