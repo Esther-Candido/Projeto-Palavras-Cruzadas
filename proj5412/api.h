@@ -34,10 +34,47 @@
 #define CHANGE_ECONOMIC_INDEX "E %s %s %.2f\n"
 #define CHANGE_TIME_INDEX "H %s %s %.2f\n"
 
+/* Modelo de Dados */
 
-/**
-* ESTRUTURA DE DADOS
-*/
+/* Estrutura de uma ligação entre cidades */
+typedef struct lig {
+    /* Controle */
+    struct lig *nextL; /* Ponteiro para a próxima ligação na lista encadeada */
+    struct lig *prevL; /* Ponteiro para a ligação anterior na lista encadeada */
+    /* Payload */
+    double indiceTemporal; /* Índice temporal da ligação */
+    double indiceEconomico; /* Índice econômico da ligação */
+    double indiceTuristico; /* Índice turístico da ligação */
+
+    char destino[CITY_ID]; /* Código de identificação da cidade destino da ligação */
+} Lig;
+
+/* Estrutura de uma cidade */
+typedef struct cidade {
+    /* Controle */
+    struct cidade *nextC; /* Ponteiro para a próxima cidade na lista encadeada */
+    struct cidade *prevC; /* Ponteiro para a cidade anterior na lista encadeada */
+
+    Lig *first; /* Ponteiro para a primeira ligação na lista de ligações desta cidade */
+    Lig *last;  /* Ponteiro para a última ligação na lista de ligações desta cidade */
+
+    /* Payload */
+    char codigo[CITY_ID]; /* Código de identificação da cidade com 3 caracteres */
+    char *nome; /* Ponteiro para o nome da cidade (alocado dinamicamente com malloc) */
+    int estado; /* Estado da cidade, podendo ser 1 (ativo) ou 0 (inativo) */
+
+} Cidade;
+
+/* Estrutura do mapa contendo todas as cidades */
+typedef struct mapa {
+    /* Controle */
+    Cidade *firstC; /* Ponteiro para a primeira cidade na lista encadeada */
+    Cidade *lastC;  /* Ponteiro para a última cidade na lista encadeada */
+    /* Payload */
+    int numCidades; /* Número total de cidades no mapa */
+
+} Mapa;
+
 
 
 
@@ -45,7 +82,9 @@
  * API - Declaração das funções públicas
  **/
 
+Mapa *new_mapa();
 
+void free_mapa(Mapa *m);
 
 
 
