@@ -18,7 +18,16 @@ void executeCommand(char *line)
     switch (line[0])
     {
     case 'A': /*Adiciona Cidade*/
-        
+    
+        /** ADICIONADO POR RUBEN 
+         * A funçao funciona mas falta perceber como chamar o ficheiro!
+         * Temos de falar com o stor
+        */
+
+       /**
+        sscanf(line,"A %s %[^\n]", attr1,attrnome);
+        add_city(m,attr1,attrnome);
+        */
         break;
     case 'O': /*Altera estado da cidade*/
         
@@ -27,7 +36,14 @@ void executeCommand(char *line)
         
         break;
     case 'Z': /*Lista Todas as Cidades*/
-        
+         /** ADICIONADO POR RUBEN 
+         * A funçao funciona mas falta perceber como chamar o ficheiro!
+         * Temos de falar com o stor
+        */
+
+       /**
+        print_citys(m);
+        */
         break;
     case 'N': /*Lista Todas as Cidades*/
         

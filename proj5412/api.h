@@ -37,6 +37,7 @@
 /* Modelo de Dados */
 
 /* Estrutura de uma ligação entre cidades */
+/* Estrutura de uma ligação entre cidades */
 typedef struct lig {
     /* Controle */
     struct lig *nextL; /* Ponteiro para a próxima ligação na lista encadeada */
@@ -62,7 +63,7 @@ typedef struct cidade {
     char codigo[CITY_ID]; /* Código de identificação da cidade com 3 caracteres */
     char *nome; /* Ponteiro para o nome da cidade (alocado dinamicamente com malloc) */
     int estado; /* Estado da cidade, podendo ser 1 (ativo) ou 0 (inativo) */
-
+    int numLigacoes; /* Número de ligações que a cidade possui */
 } Cidade;
 
 /* Estrutura do mapa contendo todas as cidades */
@@ -82,10 +83,13 @@ typedef struct mapa {
  * API - Declaração das funções públicas
  **/
 
-Mapa *new_mapa();
-
-void free_mapa(Mapa *m);
 
 
+Mapa *new_mapa(); /** RUBEN ADCIONADO **/
 
+void free_mapa(Mapa *m); /** RUBEN ADCIONADO **/
+
+void add_city(Mapa *m,char *codigo,char *nome);  /** RUBEN ADCIONADO **/
+
+void print_citys(Mapa *m); /** RUBEN ADCIONADO **/
 #endif
