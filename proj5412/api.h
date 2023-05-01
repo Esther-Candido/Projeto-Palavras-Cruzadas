@@ -36,16 +36,17 @@
 
 /* Modelo de Dados */
 
-/* Estrutura de uma ligação entre cidades */
+
 /* Estrutura de uma ligação entre cidades */
 typedef struct lig {
     /* Controle */
     struct lig *nextL; /* Ponteiro para a próxima ligação na lista encadeada */
     struct lig *prevL; /* Ponteiro para a ligação anterior na lista encadeada */
+
     /* Payload */
-    double indiceTemporal; /* Índice temporal da ligação */
-    double indiceEconomico; /* Índice econômico da ligação */
-    double indiceTuristico; /* Índice turístico da ligação */
+    float indiceTemporal; /* Índice temporal da ligação */
+    float indiceEconomico; /* Índice econômico da ligação */
+    float indiceTuristico; /* Índice turístico da ligação */
 
     char destino[CITY_ID]; /* Código de identificação da cidade destino da ligação */
 } Lig;
@@ -87,7 +88,8 @@ typedef struct mapa {
 
 Mapa *new_mapa(); /** RUBEN ADCIONADO **/
 
-void free_mapa(Mapa *m); /** RUBEN ADCIONADO **/
+
+
 
 void add_city(Mapa *m,char *codigo,char *nome);  /** RUBEN ADCIONADO **/
 
