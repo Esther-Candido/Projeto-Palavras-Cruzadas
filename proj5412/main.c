@@ -12,22 +12,18 @@ char *attr1, *attr2, *attrnome, *attrindice;
 char *comando; /*recebe uma linha do stdin*/
 /*ficheiro de dados*/
 char *fileName;
+Mapa *m;
 
 void executeCommand(char *line)
 {
+    
     switch (line[0])
     {
     case 'A': /*Adiciona Cidade*/
-    
-        /** ADICIONADO POR RUBEN 
-         * A funçao funciona mas falta perceber como chamar o ficheiro!
-         * Temos de falar com o stor
-        */
 
-       /**
         sscanf(line,"A %s %[^\n]", attr1,attrnome);
         add_city(m,attr1,attrnome);
-        */
+        
         break;
     case 'O': /*Altera estado da cidade*/
         
@@ -36,14 +32,9 @@ void executeCommand(char *line)
         
         break;
     case 'Z': /*Lista Todas as Cidades*/
-         /** ADICIONADO POR RUBEN 
-         * A funçao funciona mas falta perceber como chamar o ficheiro!
-         * Temos de falar com o stor
-        */
-
-       /**
+             
         print_citys(m);
-        */
+        
         break;
     case 'N': /*Lista Todas as Cidades*/
         
@@ -105,7 +96,7 @@ int main(int argv, char *argc[])
     char *extension;
 
     /*FIX ME - Inicia SGO*/
-    
+    m = new_mapa();
     /*##### NÃO ALTERAR DAQUI PARA BAIXO #####*/
     /*Aloca memória para receber atributos*/
     comando = malloc(MAX_LINE * sizeof(char) + 1); /*recebe uma linha do stdin*/
