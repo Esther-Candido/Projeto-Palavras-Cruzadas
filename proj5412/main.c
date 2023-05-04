@@ -26,44 +26,47 @@ void executeCommand(char *line)
         
         break;
     case 'O': /*Altera estado da cidade*/
-        
+        /* Esther*/
         break;
     case 'Y': /*Informação sobre a cidade*/
-        
+        /* Esther*/
         break;
     case 'Z': /*Lista Todas as Cidades*/
              
         print_citys(m);
         
         break;
-    case 'N': /*Lista Todas as Cidades*/
-        
+    case 'N': /*Total as Cidades*/
+        /* Ruben*/
         break;
     case 'C': /*Cria ligação entre cidades*/
-       
+       /* Esther
+       *Adiciona ligaçoes sempre no fim !!!
+       */
         break;
     case 'I': /*apaga ligação entre cidades*/
-        
+        /* Ruben*/
         break;
     case 'T': /*Altera indice turistico*/
-        
+        /*Eliseu*/
         break;
     case 'E': /*altera indice económico*/
-        
+        /*Eliseu*/
         break;
     case 'H': /*Altera indice temporal*/
-        
+        /*Eliseu*/
         break;
     case 'P': /*Apaga Cidade*/
-        
+        /* Eliseu !!*/
         break;
     case 'R': /*Melhor Rota entre duas cidades*/
-        
+        /* Todos !!!!!!*/
         break;
     case 'G': /*Guarda a base de dados*/
-        
+        /* Eliseu !!! */
         break;
     case 'X': /*sai da aplicação*/
+        /* Ruben*/
         /* não esquecer libertar a memória*/
 
         exit(EXIT_SUCCESS);
