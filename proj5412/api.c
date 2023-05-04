@@ -86,13 +86,20 @@ Lig *percorre_links(Lig *cidade_atual) /** ADICIONADO POR RUBEN */
  * ###########################################################
  **/
 
-void altera_Estado(Mapa *m, char codigo, int estado) { /* ADICIONADO POR ESTHER */
+void altera_estado(Mapa *m, char codigo, int estado) {  /* ADICIONADO POR ESTHER - O */
+    
+    if (procura_cidade(m,codigo) == NULL)
+    {
+        
+    }
+    
+    
 }
 
-void devolve_info_cidade(Mapa *m, char codigo) { /* ADICIONADO POR ESTHER, implementar mais..*/
+void devolve_info_cidade(Mapa *m, char codigo) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
 }
 
-void adiciona_ligacao_cidade(Mapa *m, char codigo, ){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!! */
+void adiciona_ligacao_cidade(Mapa *m, char codigo){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
 }
 
 

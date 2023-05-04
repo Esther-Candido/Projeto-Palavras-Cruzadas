@@ -91,7 +91,17 @@ Mapa *new_mapa(); /** RUBEN ADCIONADO **/
 
 
 
+void altera_estado(Mapa *m, char codigo, int estado); /* ESTHER ADICIONADO - O */
+
+void devolve_info_cidade(Mapa *m, char codigo); /* ESTHER ADICIONADO - Y */
+
+void adiciona_ligacao_cidade(Mapa *m, char codigo); /* ESTHER ADICIONADO  - C */
+
+
 void add_city(Mapa *m,char *codigo,char *nome);  /** RUBEN ADCIONADO **/
 
 void print_citys(Mapa *m); /** RUBEN ADCIONADO **/
+
+
+
 #endif
