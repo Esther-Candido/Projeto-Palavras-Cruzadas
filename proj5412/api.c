@@ -86,7 +86,7 @@ Lig *percorre_links(Lig *cidade_atual) /** ADICIONADO POR RUBEN */
  * ###########################################################
  **/
 
-void altera_estado(Mapa *m, char codigo, int estado) {  /* ADICIONADO POR ESTHER - O */
+void altera_estado(Mapa *m, char *codigo, int estado) {  /* ADICIONADO POR ESTHER - O */
     
     if (procura_cidade(m,codigo) == NULL)
     {
@@ -96,15 +96,120 @@ void altera_estado(Mapa *m, char codigo, int estado) {  /* ADICIONADO POR ESTHER
     
 }
 
-void devolve_info_cidade(Mapa *m, char codigo) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
+void devolve_info_cidade(Mapa *m, char *codigo) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
 }
 
-void adiciona_ligacao_cidade(Mapa *m, char codigo){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
+void adiciona_ligacao_cidade(Mapa *m, char *codigo){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
 }
 
 
-void free_mapa(Mapa *m) /** ADICIONADO POR RUBEN */
+void free_mapa(Mapa *m)/** RUBEN ADCIONADO **/ {
+    /* Inicializa o ponteiro percorre_cidades com a primeira cidade do mapa */
+    Cidade *percorre_cidades = m->firstC;
+
+    /* Itera através de todas as cidades no mapa */
+    while (percorre_cidades) {
+        /* Inicializa o ponteiro percorre_links com a primeira ligação da cidade atual */
+        Lig *percorre_links = percorre_cidades->first;
+
+        /* Itera através de todas as ligações da cidade atual */
+        while (percorre_links) {
+            /* Armazena o ponteiro para a próxima ligação */
+            Lig *prox_lig = percorre_links->nextL;
+
+            /* Libera a memória alocada para a ligação atual */
+            free(percorre_links);
+
+            /* Atualiza o ponteiro percorre_links para a próxima ligação */
+            percorre_links = prox_lig;
+        }
+
+        /* Armazena o ponteiro para a próxima cidade */
+        Cidade *prox_cidade = percorre_cidades->nextC;
+
+        /* Libera a memória alocada para a cidade atual */
+        free(percorre_cidades);
+
+        /* Atualiza o ponteiro percorre_cidades para a próxima cidade */
+        percorre_cidades = prox_cidade;
+    }
+
+    /* Reinicializa o mapa */
+    m->firstC = NULL;
+    m->lastC = NULL;
+    m->numCidades = 0;
+}
+
+void free_link(Mapa *m, char *codigo_origem, char *codigo_last) /** RUBEN ADCIONADO **/
 {
+
+    /* Procura a cidade de origem no mapa */
+    Cidade *first = procura_cidade(m, codigo_origem);
+
+    /* Se a cidade de origem não for encontrada, exibe um erro e retorna */
+    if (first == NULL) {
+        ERROR_NO_CITY(codigo_origem);
+        return;
+    }
+
+    /* Procura a ligação na cidade de origem */
+    Lig *last = search_link(first, codigo_last);
+
+    /* Se a ligação não for encontrada, exibe um erro e retorna */
+    if (last == NULL) {
+        ERROR_NO_LINK(codigo_origem,codigo_last);
+        return;
+    }
+
+    /* Se a lista de ligações estiver vazia, não faz nada */
+    if (first->first == NULL) {
+        return;
+    }
+
+    /* Diminui o contador de ligações da cidade de origem */
+    first->numLigacoes--;
+
+    /* Se last for a primeira ligação da lista, atualiza a primeira ligação */
+    if (last->prevL == NULL) {
+        first->first = last->nextL;
+
+        /* Atualiza o ponteiro prevL da próxima ligação, se houver */
+        if (last->nextL) {
+            last->nextL->prevL = NULL;
+        }
+
+        /* Libera a memória da ligação last */
+        free(last);
+        return;
+    }
+
+    /* Se last for a última ligação da lista, atualiza a última ligação */
+    if (last->nextL == NULL) {
+        first->last = last->prevL;
+        last->prevL->nextL = NULL;
+
+        /* Libera a memória da ligação last */
+        free(last);
+        return;
+    }
+
+    /* Remove a ligação last da lista, atualizando os ponteiros */
+    last->prevL->nextL = last->nextL;
+    last->nextL->prevL = last->prevL;
+
+    /* Libera a memória da ligação last */
+    free(last);
+}
+
+void total_citys(Mapa *m)/** RUBEN ADCIONADO **/
+
+{
+    if (m->numCidades==0)
+    {
+        ERROR_DB_EMPTY;
+        return;
+    }
+    printf("%d",m->numCidades);
     
 }
 

@@ -37,7 +37,7 @@ void executeCommand(char *line)
         
         break;
     case 'N': /*Total as Cidades*/
-        /* Ruben*/
+        total_citys(m);
         break;
     case 'C': /*Cria ligação entre cidades*/
        /* Esther
@@ -45,7 +45,8 @@ void executeCommand(char *line)
        */
         break;
     case 'I': /*apaga ligação entre cidades*/
-        /* Ruben*/
+        sscanf(line,"I %s %s",attr1,attr2);
+        free_link(m,attr1,attr2);
         break;
     case 'T': /*Altera indice turistico*/
         /*Eliseu*/
@@ -68,7 +69,7 @@ void executeCommand(char *line)
     case 'X': /*sai da aplicação*/
         /* Ruben*/
         /* não esquecer libertar a memória*/
-
+    free_mapa(m);
         exit(EXIT_SUCCESS);
         break;
     case '#': /*Comentário não executar*/
