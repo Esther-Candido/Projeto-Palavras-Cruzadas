@@ -86,7 +86,9 @@ Lig *percorre_links(Lig *cidade_atual) /** ADICIONADO POR RUBEN */
  * ###########################################################
  **/
 
+void altera_Estado(Mapa *m, char codigo, int estado) { /** ADICIONADO POR ESTHER */
 
+}
 
 void free_mapa(Mapa *m) /** ADICIONADO POR RUBEN */
 {
