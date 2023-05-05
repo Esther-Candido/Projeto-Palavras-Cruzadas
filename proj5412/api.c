@@ -495,6 +495,8 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */{
 
     /* Atualiza o número de cidades no mapa */ 
     m->numCidades--;
+    
+    return;
 }
 
 
