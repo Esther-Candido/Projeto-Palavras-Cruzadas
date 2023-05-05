@@ -44,7 +44,13 @@ void executeCommand(char *line)
     case 'N': /*Total as Cidades*/
         total_citys(m);
         break;
-    case 'C': /*Cria ligação entre cidades*/
+    case 'C': /*Adiciona ligação entre cidades origem -> destino */
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        memset(attr2, '\0', CITY_ID + 1);
+        strncpy(attr2, &line[6], CITY_ID);
+        adiciona_ligacao_cidade(m, attr1, attr2);
+       
        /* Esther
        *Adiciona ligaçoes sempre no fim !!!
        */

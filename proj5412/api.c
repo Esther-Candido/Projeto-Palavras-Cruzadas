@@ -108,7 +108,61 @@ void altera_estado(Mapa *m, char *codigo, int estado) {  /* ADICIONADO POR ESTHE
 void devolve_info_cidade(Mapa *m, char *codigo) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
 }
 
-void adiciona_ligacao_cidade(Mapa *m, char *codigo){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
+void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
+
+ /*Lig *liga = percorre_links(m,codigo);*/
+ Cidade *addliga_origem = procura_cidade(m, codigo); /*origem*/
+ Cidade *addliga2_destino = procura_cidade(m, cod_destino); /*destino*/
+
+    /*Verifica se origem e destino existe, se as duas n existir -> exibe o print erro para as duas*/
+    if (addliga_origem == NULL && addliga2_destino == NULL)
+    {
+        ERROR_NO_CITY(codigo);
+        ERROR_NO_CITY(cod_destino);
+        return;
+    }
+    /*caso contrario, se for apenas origem -> exibe print apenas para origem */
+     else if(addliga_origem == NULL)
+    {
+        ERROR_NO_CITY(codigo);
+        return;  
+    }
+    /*caso contrario, se for apenas destino -> exibe print apenas para destino */
+    else if (addliga2_destino == NULL)
+    {
+        ERROR_NO_CITY(cod_destino);
+        return; 
+    }
+
+    /* Vai aparecer cidade duplicada, pois verificamos se os codigo da cidade origem = destino é igual*/
+    if(addliga_origem == addliga2_destino){
+        ERROR_CITY_REPEATED(codigo);
+        return;
+    }
+
+    
+
+    
+    
+    
+
+
+
+
+ 
+
+/*   C <id_origem> <id_destino>     C LIS POR
+- <id_origem>: 3 caracteres (letras) que identifica uma cidade de
+origem;
+- <id_destino>: 3 caracteres (letras) que identifica uma cidade de
+destino;    */
+
+
+/*  não são criadas duas ligações de
+lisboa para o Porto do tipo 2 x LIS->POR, mas pode haver uma LIS->POR e
+outra POR->LIS); */
+
+
 }
 
 
