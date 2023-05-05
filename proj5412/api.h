@@ -91,8 +91,8 @@ Mapa *new_mapa(); /** RUBEN ADCIONADO **/
 void free_mapa(Mapa *m);
 
 void altera_estado(Mapa *m, char *codigo, int estado); /* ESTHER ADICIONADO - O */
-void devolve_info_cidade(Mapa *m, char *codigo); /* ESTHER ADICIONADO - Y */
 void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino); /* ESTHER ADICIONADO  - C */
+void devolve_info_cidade(Mapa *m, char *codigo, int estado); /* ESTHER ADICIONADO - Y */
 
 void free_link(Mapa *m, char *codigo_origem, char *codigo_last);
 

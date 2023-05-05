@@ -34,6 +34,11 @@ void executeCommand(char *line)
         /* Esther*/
         break;
     case 'Y': /*Informação sobre a cidade*/
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        memset(attr2, '\0', CITY_ID + 1);
+        strncpy(attr2, &line[6], 1);
+        devolve_info_cidade(m, attr1, atoi(attr2));
         /* Esther*/
         break;
     case 'Z': /*Lista Todas as Cidades*/
@@ -50,7 +55,6 @@ void executeCommand(char *line)
         memset(attr2, '\0', CITY_ID + 1);
         strncpy(attr2, &line[6], CITY_ID);
         adiciona_ligacao_cidade(m, attr1, attr2);
-       
        /* Esther
        *Adiciona ligaçoes sempre no fim !!!
        */

@@ -105,12 +105,9 @@ void altera_estado(Mapa *m, char *codigo, int estado) {  /* ADICIONADO POR ESTHE
     
 }
 
-void devolve_info_cidade(Mapa *m, char *codigo) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
-}
 
 void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
 
- 
  Cidade *addliga_origem = procura_cidade(m, codigo_origem); /*origem*/
  Cidade *addliga2_destino = procura_cidade(m, cod_destino); /*destino*/
 
@@ -184,6 +181,40 @@ outra POR->LIS); */
 
 
 }
+
+void devolve_info_cidade(Mapa *m, char *codigo, int estado) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
+
+    Cidade *info = procura_cidade(m, codigo);
+
+
+    if (info == NULL)
+    {
+        ERROR_NO_CITY(codigo);
+    }
+
+        if (estado == 0) /* informação reduzida*/
+    {
+        MSG_CITY_INFO_HEADER(info->codigo,info->estado,info->numLigacoes,info->nome);
+        return;
+    }
+
+
+    Lig *pesquisa = info->first;
+    
+    if (estado == 1) /* informação completa*/
+    {
+
+        MSG_CITY_INFO_HEADER(info->codigo,info->estado,info->numLigacoes,info->nome);
+        while (pesquisa != NULL)
+        {
+            MSG_CITY_INFO_ITEM(pesquisa->destino,pesquisa->indiceTemporal,pesquisa->indiceEconomico,pesquisa->indiceTuristico);
+            pesquisa = percorre_links(pesquisa);
+        }
+        
+}
+
+}
+
 
 
 void free_mapa(Mapa *m)/** RUBEN ADCIONADO **/ {
