@@ -108,23 +108,23 @@ void altera_estado(Mapa *m, char *codigo, int estado) {  /* ADICIONADO POR ESTHE
 void devolve_info_cidade(Mapa *m, char *codigo) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
 }
 
-void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
+void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
 
  
- Cidade *addliga_origem = procura_cidade(m, codigo); /*origem*/
+ Cidade *addliga_origem = procura_cidade(m, codigo_origem); /*origem*/
  Cidade *addliga2_destino = procura_cidade(m, cod_destino); /*destino*/
 
     /*Verifica se origem e destino existe, se as duas n existir -> exibe o print erro para as duas*/
     if (addliga_origem == NULL && addliga2_destino == NULL)
     {
-        ERROR_NO_CITY(codigo);
+        ERROR_NO_CITY(codigo_origem);
         ERROR_NO_CITY(cod_destino);
         return;
     }
     /*caso contrario, se for apenas origem -> exibe print apenas para origem */
      else if(addliga_origem == NULL)
     {
-        ERROR_NO_CITY(codigo);
+        ERROR_NO_CITY(codigo_origem);
         return;  
     }
     /*caso contrario, se for apenas destino -> exibe print apenas para destino */
@@ -136,17 +136,45 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino){ /* ADICI
 
     /* Vai aparecer cidade duplicada, pois verificamos se os codigo da cidade origem = destino é igual*/
     if(addliga_origem == addliga2_destino){
-        ERROR_CITY_REPEATED(codigo);
+        ERROR_CITY_REPEATED(codigo_origem);
         return;
     }
 
-    
+    /*Ponteiro para acessar as ligações*/
     Lig *liga = search_link(addliga_origem, cod_destino);
 
-   if (liga != NULL && strcmp(liga->destino, cod_destino) == 0){
-        printf("Ligaçao repetida\n");
+        if (liga != NULL && strcmp(liga->destino, cod_destino) == 0){
+                printf("Ligaçao repetida\n");
+                return;
+                }
+
+    /*Criar estrutura para as ligações, alocar memoria*/
+    Lig *nova_liga = malloc(sizeof(Lig));
+    strncpy(nova_liga->destino,cod_destino, CITY_ID);
+    nova_liga->indiceTemporal = 0;
+    nova_liga->indiceEconomico = 0;
+    nova_liga->indiceTuristico = 0;
+    addliga_origem->numLigacoes++;
+
+    /*Não existe Ligação? inserir ligação como unica na lista*/
+    if (addliga_origem->first == NULL)
+    {
+        nova_liga->nextL = NULL; /* o nextL é igual vazio */
+        nova_liga->prevL = NULL; /* o prevL é igual vazio */
+        addliga_origem->first = nova_liga; /*id cidade origem da primeira é igual = NOVA_LIGA*/
+        addliga_origem->last = nova_liga; /*id cidade origem da ultima é igual = NOVA_LIGA*/
+        printf("teste: inseriu vazia lista\n");
         return;
-        }
+    }
+
+    /* Estrategia: Inserir as ligações no final da lista */
+    addliga_origem->last->nextL = nova_liga;    /*ir no ponteiro da lig final e definir que a proxima ligação(nextL) sera a nova_liga. */
+    nova_liga->prevL = addliga_origem->last; /*Voltar no ponteiro e definir que o nextL agora é o last*/
+    nova_liga->nextL = NULL;  /*Deixar o nextL como NULL para dar abertura a receber novas ligações*/
+    addliga_origem->last = nova_liga; /* a ligação LAST sera a nova_liga*/
+    printf("inseriu lig na ultima\n");
+    
+
 
 
 
