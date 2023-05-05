@@ -312,3 +312,9 @@ void print_citys(Mapa *m)/** ADICIONADO POR RUBEN */
     }
     
 }
+
+void alterar_in_turistico()/* ADICIONADO POR ELISEU */{}
+void alterar_in_economico()/* ADICIONADO POR ELISEU */{}
+void alterar_in_temporal()/* ADICIONADO POR ELISEU */{}
+void apagar_cidade()/* ADICIONADO POR ELISEU */{}
+void guardar_file()/* ADICIONADO POR ELISEU */{}
