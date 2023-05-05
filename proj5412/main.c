@@ -74,6 +74,9 @@ void executeCommand(char *line)
         break;
     case 'P': /*Apaga Cidade*/
         /* Eliseu !!*/
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        remover_cidade(m, attr1);
         break;
     case 'R': /*Melhor Rota entre duas cidades*/
         /* Todos !!!!!!*/

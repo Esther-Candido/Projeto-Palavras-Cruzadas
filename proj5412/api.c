@@ -190,6 +190,7 @@ void devolve_info_cidade(Mapa *m, char *codigo, int estado) { /* ADICIONADO POR 
     if (info == NULL)
     {
         ERROR_NO_CITY(codigo);
+        return;
     }
 
         if (estado == 0) /* informação reduzida*/
@@ -210,7 +211,7 @@ void devolve_info_cidade(Mapa *m, char *codigo, int estado) { /* ADICIONADO POR 
             MSG_CITY_INFO_ITEM(pesquisa->destino,pesquisa->indiceTemporal,pesquisa->indiceEconomico,pesquisa->indiceTuristico);
             pesquisa = percorre_links(pesquisa);
         }
-        
+        return;
 }
 
 }
@@ -430,5 +431,71 @@ void print_citys(Mapa *m)/** ADICIONADO POR RUBEN */
 void alterar_in_turistico()/* ADICIONADO POR ELISEU */{}
 void alterar_in_economico()/* ADICIONADO POR ELISEU */{}
 void alterar_in_temporal()/* ADICIONADO POR ELISEU */{}
-void apagar_cidade()/* ADICIONADO POR ELISEU */{}
+
+void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */{
+    
+    Cidade *excluir_cidade = procura_cidade(m,cidade);
+
+    if (excluir_cidade == NULL)
+    {
+        ERROR_NO_CITY(cidade);
+        return;
+    }
+    
+    Cidade *aux = m->firstC;
+    while (aux)
+    {
+        Lig *ligacao = search_link(aux, cidade);
+        
+        if(ligacao != NULL){
+
+            if (ligacao->prevL) /* Entra se nao for a primeira ligacao*/ {
+                ligacao->prevL->nextL = ligacao->nextL;
+            } 
+            else /* Primeira ligacao */ {
+                aux->first = ligacao->nextL;
+            }
+
+            if (ligacao->nextL) /* Entra se nao for a ultima ligacao*/ {
+                ligacao->nextL->prevL = ligacao->prevL;
+            } 
+            else /* Ultima ligacao */ {
+                aux->last = ligacao->prevL;
+            }
+
+           free(ligacao);
+        }
+        aux->numLigacoes--;
+        aux = aux->nextC;
+    }
+
+    /* Remove todas as ligações da cidade a ser removida */
+    Lig *ligacao = excluir_cidade->first;
+    while (ligacao) {
+        Lig *proxima_ligacao = ligacao->nextL;
+        free(ligacao);
+        ligacao = proxima_ligacao;
+    }
+
+    if (excluir_cidade) /* Entra se nao for a primeira Cidade*/ {
+        excluir_cidade->prevC->nextC = excluir_cidade->nextC;
+    } 
+    else /* Primeira ligacao */ {
+        m->firstC = excluir_cidade->nextC;
+    }
+
+    if (excluir_cidade->nextC) /* Entra se nao for a ultima Cidade*/ {
+        excluir_cidade->nextC->prevC = excluir_cidade->prevC;
+    } 
+    else /* Ultima Cidade */ {
+        m->lastC = excluir_cidade->prevC;
+    }
+    
+    free(excluir_cidade);
+
+    /* Atualiza o número de cidades no mapa */ 
+    m->numCidades--;
+}
+
+
 void guardar_file()/* ADICIONADO POR ELISEU */{}

@@ -103,7 +103,7 @@ void print_citys(Mapa *m); /** RUBEN ADCIONADO **/
 void alterar_in_turistico(); /* ADICIONADO POR ELISEU */
 void alterar_in_economico(); /* ADICIONADO POR ELISEU */
 void alterar_in_temporal(); /* ADICIONADO POR ELISEU */
-void apagar_cidade(); /* ADICIONADO POR ELISEU */
+void remover_cidade(Mapa *m, char *cidade); /* ADICIONADO POR ELISEU */
 void guardar_file(); /* ADICIONADO POR ELISEU */
 
 #endif
