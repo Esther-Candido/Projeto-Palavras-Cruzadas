@@ -110,7 +110,7 @@ void devolve_info_cidade(Mapa *m, char *codigo) { /* ADICIONADO POR ESTHER, impl
 
 void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino){ /* ADICIONADO POR ESTHER //////  id_origem, id_destino = char codigo!!  - C  */
 
- /*Lig *liga = percorre_links(m,codigo);*/
+ 
  Cidade *addliga_origem = procura_cidade(m, codigo); /*origem*/
  Cidade *addliga2_destino = procura_cidade(m, cod_destino); /*destino*/
 
@@ -141,21 +141,13 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino){ /* ADICI
     }
 
     
+    Lig *liga = search_link(addliga_origem, cod_destino);
 
-    
-    
-    
+   if (liga != NULL && strcmp(liga->destino, cod_destino) == 0){
+        printf("Ligaçao repetida\n");
+        return;
+        }
 
-
-
-
- 
-
-/*   C <id_origem> <id_destino>     C LIS POR
-- <id_origem>: 3 caracteres (letras) que identifica uma cidade de
-origem;
-- <id_destino>: 3 caracteres (letras) que identifica uma cidade de
-destino;    */
 
 
 /*  não são criadas duas ligações de

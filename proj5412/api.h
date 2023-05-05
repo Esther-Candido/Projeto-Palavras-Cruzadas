@@ -91,18 +91,13 @@ Mapa *new_mapa(); /** RUBEN ADCIONADO **/
 void free_mapa(Mapa *m);
 
 void altera_estado(Mapa *m, char *codigo, int estado); /* ESTHER ADICIONADO - O */
-
 void devolve_info_cidade(Mapa *m, char *codigo); /* ESTHER ADICIONADO - Y */
-
 void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino); /* ESTHER ADICIONADO  - C */
 
 void free_link(Mapa *m, char *codigo_origem, char *codigo_last);
 
 void total_citys(Mapa *m);/** RUBEN ADCIONADO **/
-
-
 void add_city(Mapa *m,char *codigo,char *nome);  /** RUBEN ADCIONADO **/
-
 void print_citys(Mapa *m); /** RUBEN ADCIONADO **/
 
 void alterar_in_turistico(); /* ADICIONADO POR ELISEU */
