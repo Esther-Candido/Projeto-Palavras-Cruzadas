@@ -26,6 +26,11 @@ void executeCommand(char *line)
         
         break;
     case 'O': /*Altera estado da cidade*/
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        memset(attr2, '\0', CITY_ID + 1);
+        strncpy(attr2, &line[6], 1);
+        altera_estado(m, attr1, atoi(attr2));
         /* Esther*/
         break;
     case 'Y': /*Informação sobre a cidade*/

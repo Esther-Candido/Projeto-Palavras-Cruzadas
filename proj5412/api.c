@@ -87,11 +87,20 @@ Lig *percorre_links(Lig *cidade_atual) /** ADICIONADO POR RUBEN */
  **/
 
 void altera_estado(Mapa *m, char *codigo, int estado) {  /* ADICIONADO POR ESTHER - O */
+
+    Cidade *city = procura_cidade(m, codigo);
     
-    if (procura_cidade(m,codigo) == NULL)
+    if (city == NULL)
     {
-        
+        ERROR_NO_CITY(codigo);
+        return;  
     }
+
+    /* onde o estado é igual o estado para ocorrer a alteração */
+    city->estado = estado;
+
+    /* Para entrega do projeto, apagar este print*/
+    printf("teste: O %s estado %d\n", city->nome, estado);
     
     
 }
