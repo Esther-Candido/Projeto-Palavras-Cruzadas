@@ -477,7 +477,7 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */{
         ligacao = proxima_ligacao;
     }
 
-    if (excluir_cidade) /* Entra se nao for a primeira Cidade*/ {
+    if (excluir_cidade->prevC) /* Entra se nao for a primeira Cidade*/ {
         excluir_cidade->prevC->nextC = excluir_cidade->nextC;
     } 
     else /* Primeira ligacao */ {
@@ -495,7 +495,7 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */{
 
     /* Atualiza o número de cidades no mapa */ 
     m->numCidades--;
-    
+
     return;
 }
 
