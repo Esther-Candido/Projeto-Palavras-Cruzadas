@@ -413,7 +413,7 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */{
             } 
             else /* Primeira ligacao */ {
                 aux->first = ligacao->nextL;
-                ligacao->nextL->prevL = ligacao->prevL;
+
             }
 
             if (ligacao->nextL) /* Entra se nao for a ultima ligacao*/ {
@@ -421,12 +421,12 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */{
             } 
             else /* Ultima ligacao */ {
                 aux->last = ligacao->prevL;
-                ligacao->prevL->nextL = ligacao->nextL;
-            }
 
+            }
+            aux->numLigacoes--;
            free(ligacao);
         }
-        aux->numLigacoes--;
+        
         aux = aux->nextC;
     }
 
