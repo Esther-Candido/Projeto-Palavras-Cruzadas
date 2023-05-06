@@ -20,10 +20,12 @@ void executeCommand(char *line)
     switch (line[0])
     {
     case 'A': /*Adiciona Cidade*/
-
-        sscanf(line,"A %s %[^\n]", attr1,attrnome);
-        add_city(m,attr1,attrnome);
-        
+        memset(attr1,'\0',CITY_ID + 1);
+        memset(attrnome,'\0',MAX_CITY_NAME + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        strncpy(attrnome, &line[6], MAX_CITY_NAME);
+        attrnome[strlen(attrnome) - 1] = '\0';
+        adicionar_cidade(m,attr1,attrnome);  
         break;
     case 'O': /*Altera estado da cidade*/
         memset(attr1, '\0', CITY_ID + 1);
@@ -31,7 +33,6 @@ void executeCommand(char *line)
         memset(attr2, '\0', CITY_ID + 1);
         strncpy(attr2, &line[6], 1);
         altera_estado(m, attr1, atoi(attr2));
-        /* Esther*/
         break;
     case 'Y': /*Informação sobre a cidade*/
         memset(attr1, '\0', CITY_ID + 1);
@@ -39,15 +40,12 @@ void executeCommand(char *line)
         memset(attr2, '\0', CITY_ID + 1);
         strncpy(attr2, &line[6], 1);
         devolve_info_cidade(m, attr1, atoi(attr2));
-        /* Esther*/
         break;
-    case 'Z': /*Lista Todas as Cidades*/
-             
-        print_citys(m);
-        
+    case 'Z': /*Lista Todas as Cidades*/  
+        print_cidades(m);
         break;
     case 'N': /*Total as Cidades*/
-        total_citys(m);
+        total_cidades(m);
         break;
     case 'C': /*Adiciona ligação entre cidades origem -> destino */
         memset(attr1, '\0', CITY_ID + 1);
@@ -55,13 +53,13 @@ void executeCommand(char *line)
         memset(attr2, '\0', CITY_ID + 1);
         strncpy(attr2, &line[6], CITY_ID);
         adiciona_ligacao_cidade(m, attr1, attr2);
-       /* Esther
-       *Adiciona ligaçoes sempre no fim !!!
-       */
         break;
     case 'I': /*apaga ligação entre cidades*/
-        sscanf(line,"I %s %s",attr1,attr2);
-        free_link(m,attr1,attr2);
+        memset(attr1,'\0',CITY_ID + 1);
+        memset(attr2,'\0',CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        strncpy(attr1, &line[6], CITY_ID);
+        free_ligacao(m,attr1,attr2);
         break;
     case 'T': /*Altera indice turistico*/
         /*Eliseu*/
@@ -73,7 +71,6 @@ void executeCommand(char *line)
         /*Eliseu*/
         break;
     case 'P': /*Apaga Cidade*/
-        /* Eliseu !!*/
         memset(attr1, '\0', CITY_ID + 1);
         strncpy(attr1, &line[2], CITY_ID);
         remover_cidade(m, attr1);
@@ -85,9 +82,13 @@ void executeCommand(char *line)
         /* Eliseu !!! */
         break;
     case 'X': /*sai da aplicação*/
-        /* Ruben*/
-        /* não esquecer libertar a memória*/
-    free_mapa(m);
+        free(attr1);
+        free(attr2);
+        free(attrnome);
+        free(attrindice);
+        free(fileName);
+        free(comando);
+        free_mapa(m);
         exit(EXIT_SUCCESS);
         break;
     case '#': /*Comentário não executar*/
