@@ -391,84 +391,104 @@ void alterar_in_turistico()/* ADICIONADO POR ELISEU */{}
 void alterar_in_economico()/* ADICIONADO POR ELISEU */{}
 void alterar_in_temporal()/* ADICIONADO POR ELISEU */{}
 
-void remover_cidade(Mapa *m, char *cidade){
-    
-    Cidade *excluir_cidade = NULL;
-    Cidade *aux = m->firstC;
-
-    /* Procura a cidade a ser excluída */
-    while (aux) {
-        if (strcmp(aux->codigo, cidade) == 0) {
-            excluir_cidade = aux;
-            break;
-        }
-        aux = aux->nextC;
-    }
-
-    if (excluir_cidade == NULL)
+void remover_cidade(Mapa *m, char *cidade)
+{
+    Cidade *c = procura_cidade(m, cidade);
+    if (c == NULL)
     {
         ERROR_NO_CITY(cidade);
         return;
     }
     
+
     /* Remove todas as ligações para a cidade a ser removida */
-    aux = m->firstC;
+    Cidade *aux = m->firstC;
+    
     while (aux)
     {
-        Lig *ligacao = aux->first;
-        while (ligacao) {
-            Lig *proxima_ligacao = ligacao->nextL;
-            if (strcmp(ligacao->destino, cidade) == 0) {
-                if (ligacao == aux->first) /* Entra se for a primeira ligacao*/ {
-                    aux->first = ligacao->nextL;
-                    if (ligacao->nextL)
-                        ligacao->nextL->prevL = NULL;
+        Lig *ligacao = procura_ligacoes(aux,cidade);
+
+        /* Se a ligação aponta para a cidade a ser excluída */
+        if (ligacao) {
+            /* Se for a primeira ligação */
+            if (ligacao == aux->first && ligacao == aux->last){
+                aux->first = NULL;
+                aux->last = NULL;
+
+            }
+            else{
+                if (ligacao == aux->first) {
+                aux->first = ligacao->nextL;
+                ligacao->nextL->prevL = NULL;
                 } 
-                else if (ligacao == aux->last) /* Entra se for a ultima ligacao*/ {
+                
+                /* Se for a última ligação */
+                if (ligacao == aux->last) {
                     aux->last = ligacao->prevL;
-                    if (ligacao->prevL)
-                        ligacao->prevL->nextL = NULL;
+                    ligacao->prevL->nextL = NULL;
                 }
-                else /* Ligação no meio da lista */ {
+                
+                /* Caso geral - Ligação no meio da lista */
+                if (ligacao->prevL && ligacao->nextL) {
                     ligacao->prevL->nextL = ligacao->nextL;
                     ligacao->nextL->prevL = ligacao->prevL;
                 }
                 free(ligacao);
-                aux->numLigacoes--;
             }
-            ligacao = proxima_ligacao;
+            aux->numLigacoes--;
         }
         aux = aux->nextC;
     }
 
-    /* Remove todas as ligações da cidade a ser removida */
-    Lig *ligacao = excluir_cidade->first;
-    while (ligacao) {
-        Lig *proxima_ligacao = ligacao->nextL;
-        free(ligacao);
-        ligacao = proxima_ligacao;
-    }
+    Lig *ligacao = c->first;
+    while (ligacao)
+    {
+        Lig *remover_lig = ligacao;
+        ligacao = ligacao->nextL;
 
-    if (excluir_cidade == m->firstC) /* Entra se for a primeira Cidade*/ {
-        m->firstC = excluir_cidade->nextC;
-        if (excluir_cidade->nextC)
-            excluir_cidade->nextC->prevC = NULL;
-    } 
-    else if (excluir_cidade == m->lastC) /* Entra se for a ultima Cidade*/ {
-        m->lastC = excluir_cidade->prevC;
-        if (excluir_cidade->prevC)
-            excluir_cidade->prevC->nextC = NULL;
+        free(remover_lig);
     }
-    else /* Cidade no meio da lista */ {
-        excluir_cidade->prevC->nextC = excluir_cidade->nextC;
-        excluir_cidade->nextC->prevC = excluir_cidade->prevC;
-    }
+    c->first = NULL;
+    c->last = NULL;
+
     
-    free(excluir_cidade);
 
-    /* Atualiza o número de cidades no mapa */ 
+
+    /* Se cheguei aqui existe e vou apagar a cidade */
     m->numCidades--;
 
+    /* Case seja a única cidade */ 
+    if (c->nextC == NULL && c->prevC == NULL)
+    {
+        free(c);
+        m->firstC = NULL;
+        m->lastC = NULL;
+        return;
+    }
+
+    /* Caso seja a primeira */ 
+    if (c == m->firstC)
+    {
+        c->nextC->prevC = NULL;
+        m->firstC = c->nextC;
+        free(c);
+        return;
+    }
+
+    /*  Caso seja a última */
+    if (c == m->lastC)
+    {
+        c->prevC->nextC=NULL;
+        m->lastC=c->prevC;
+        free(c);
+        return;
+    }
+    
+    /* se cheguei aqui */ 
+    /* Caso Geral - Apagar no meio */ 
+    c->prevC->nextC = c->nextC;
+    c->nextC->prevC = c->prevC;
+    free(c);
     return;
 }
 
