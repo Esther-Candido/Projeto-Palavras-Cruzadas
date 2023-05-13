@@ -63,13 +63,37 @@ void executeCommand(char *line)
         break;
     case 'T': /*Altera indice turistico*/
         /*Eliseu*/
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        memset(attr2, '\0', CITY_ID + 1);
+        strncpy(attr2, &line[6], CITY_ID);
+        memset(attrindice, '\0', MAX_INDICE_LENGHT + 1);
+        strncpy(attrindice, &line[10], MAX_INDICE_LENGHT);
+        alterar_in_turistico(m, attr1, attr2, atof(attrindice));
         break;
+
     case 'E': /*altera indice económico*/
         /*Eliseu*/
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        memset(attr2, '\0', CITY_ID + 1);
+        strncpy(attr2, &line[6], CITY_ID);
+        memset(attrindice, '\0', MAX_INDICE_LENGHT + 1);
+        strncpy(attrindice, &line[10], MAX_INDICE_LENGHT);
+        alterar_in_economico(m, attr1, attr2, atof(attrindice));
         break;
+
     case 'H': /*Altera indice temporal*/
         /*Eliseu*/
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        memset(attr2, '\0', CITY_ID + 1);
+        strncpy(attr2, &line[6], CITY_ID);
+        memset(attrindice, '\0', MAX_INDICE_LENGHT + 1);
+        strncpy(attrindice, &line[10], MAX_INDICE_LENGHT);
+        alterar_in_temporal(m, attr1, attr2, atof(attrindice));
         break;
+
     case 'P': /*Apaga Cidade*/
         memset(attr1, '\0', CITY_ID + 1);
         strncpy(attr1, &line[2], CITY_ID);

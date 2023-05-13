@@ -151,9 +151,9 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino); /* ESTHE
  */
 void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last);
 
-void alterar_in_turistico(); /* ADICIONADO POR ELISEU */
-void alterar_in_economico(); /* ADICIONADO POR ELISEU */
-void alterar_in_temporal(); /* ADICIONADO POR ELISEU */
+void alterar_in_turistico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice); /* ADICIONADO POR ELISEU */
+void alterar_in_economico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice); /* ADICIONADO POR ELISEU */
+void alterar_in_temporal(Mapa *m, char *cidade_origem, char *cidade_destino, double indice); /* ADICIONADO POR ELISEU */
 
 /**
  * @brief Remove uma cidade e todas as suas ligações do mapa e libera a memória alocada

@@ -387,11 +387,111 @@ void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last) /** RUBEN ADC
     free(last);
 }
 
-void alterar_in_turistico()/* ADICIONADO POR ELISEU */{}
-void alterar_in_economico()/* ADICIONADO POR ELISEU */{}
-void alterar_in_temporal()/* ADICIONADO POR ELISEU */{}
+void alterar_in_turistico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
+{
+    
+    Cidade *c1 = procura_cidade(m, cidade_origem);
+    Cidade *c2 = procura_cidade(m, cidade_destino);
 
-void remover_cidade(Mapa *m, char *cidade)
+    if (c1 == NULL && c2 == NULL){
+        ERROR_NO_CITY(cidade_origem);
+        ERROR_NO_CITY(cidade_destino);
+        return;
+    }
+    if (c1 == NULL){
+        ERROR_NO_CITY(cidade_origem);
+        return;
+    }
+    if (c2 == NULL){
+        ERROR_NO_CITY(cidade_destino);
+        return;
+    }
+
+    Lig *ligacao = c1->first;
+    while (ligacao)
+    {
+        if (strcmp(ligacao->destino, c2->codigo) == 0){
+            ligacao->indiceTuristico = indice;
+            return;
+        }
+        ligacao = ligacao->nextL;
+    }
+    
+
+    ERROR_NO_LINK(cidade_origem,cidade_destino);
+    return;  
+}
+
+void alterar_in_economico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
+{
+    
+    Cidade *c1 = procura_cidade(m, cidade_origem);
+    Cidade *c2 = procura_cidade(m, cidade_destino);
+
+    if (c1 == NULL && c2 == NULL){
+        ERROR_NO_CITY(cidade_origem);
+        ERROR_NO_CITY(cidade_destino);
+        return;
+    }
+    if (c1 == NULL){
+        ERROR_NO_CITY(cidade_origem);
+        return;
+    }
+    if (c2 == NULL){
+        ERROR_NO_CITY(cidade_destino);
+        return;
+    }
+
+    Lig *ligacao = c1->first;
+    while (ligacao)
+    {
+        if (strcmp(ligacao->destino, c2->codigo) == 0){
+            ligacao->indiceEconomico = indice;
+            return;
+        }
+        ligacao = ligacao->nextL;
+    }
+    
+
+    ERROR_NO_LINK(cidade_origem,cidade_destino);
+    return;
+}
+
+void alterar_in_temporal(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
+{
+        Cidade *c1 = procura_cidade(m, cidade_origem);
+    Cidade *c2 = procura_cidade(m, cidade_destino);
+
+    if (c1 == NULL && c2 == NULL){
+        ERROR_NO_CITY(cidade_origem);
+        ERROR_NO_CITY(cidade_destino);
+        return;
+    }
+    if (c1 == NULL){
+        ERROR_NO_CITY(cidade_origem);
+        return;
+    }
+    if (c2 == NULL){
+        ERROR_NO_CITY(cidade_destino);
+        return;
+    }
+
+    Lig *ligacao = c1->first;
+    while (ligacao)
+    {
+        if (strcmp(ligacao->destino, c2->codigo) == 0){
+            ligacao->indiceTemporal = indice;
+            return;
+        }
+        ligacao = ligacao->nextL;
+    }
+    
+
+    ERROR_NO_LINK(cidade_origem,cidade_destino);
+    return;
+}
+
+void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */
 {
     Cidade *c = procura_cidade(m, cidade);
     if (c == NULL)
@@ -491,7 +591,6 @@ void remover_cidade(Mapa *m, char *cidade)
     free(c);
     return;
 }
-
 
 void guardar_file()/* ADICIONADO POR ELISEU */{}
 
