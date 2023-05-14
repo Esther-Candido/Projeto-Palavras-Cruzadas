@@ -418,7 +418,7 @@ void alterar_in_turistico(Mapa *m, char *cidade_origem, char *cidade_destino, do
     {
         /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
         if (strcmp(ligacao->destino, c2->codigo) == 0){
-            if (indice < 0){
+            if (indice < 0 && indice > 1000){
                 return;
                 }
             ligacao->indiceTuristico = indice;
@@ -464,7 +464,7 @@ void alterar_in_economico(Mapa *m, char *cidade_origem, char *cidade_destino, do
     {
         /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
         if (strcmp(ligacao->destino, c2->codigo) == 0){
-            if (indice < 0){
+            if (indice < 0 && indice > 1000){
                 return;
                 }
             
@@ -511,7 +511,7 @@ void alterar_in_temporal(Mapa *m, char *cidade_origem, char *cidade_destino, dou
     {
         /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
         if (strcmp(ligacao->destino, c2->codigo) == 0){
-            if (indice < 0){
+            if (indice < 0 && indice > 1000){
                 return;
                 }
             ligacao->indiceTemporal = indice;
