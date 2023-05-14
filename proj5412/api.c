@@ -389,104 +389,139 @@ void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last) /** RUBEN ADC
 
 void alterar_in_turistico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
 {
-    
+     /* Primeiro, tentamos encontrar as cidades de origem e destino no mapa. */
     Cidade *c1 = procura_cidade(m, cidade_origem);
     Cidade *c2 = procura_cidade(m, cidade_destino);
 
+    /* Se ambas as cidades não existirem */
     if (c1 == NULL && c2 == NULL){
         ERROR_NO_CITY(cidade_origem);
         ERROR_NO_CITY(cidade_destino);
         return;
     }
+
+    /* Se apenas a cidade de origem não existir */
     if (c1 == NULL){
         ERROR_NO_CITY(cidade_origem);
         return;
     }
+
+    /* Se apenas a cidade de destino não existir */
     if (c2 == NULL){
         ERROR_NO_CITY(cidade_destino);
         return;
     }
 
+    /* Tentando encontrar ligacao da cidade origem com a cidade destino. */
     Lig *ligacao = c1->first;
     while (ligacao)
     {
+        /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
         if (strcmp(ligacao->destino, c2->codigo) == 0){
+            if (indice < 0){
+                return;
+                }
             ligacao->indiceTuristico = indice;
             return;
         }
+        /* Se a ligação atual não for a correta, passamos para a próxima ligação na lista. */
         ligacao = ligacao->nextL;
     }
-    
 
+    /* Se chegamos até aqui, significa que não encontramos uma ligação entre a cidade de origem e a cidade de destino */
     ERROR_NO_LINK(cidade_origem,cidade_destino);
-    return;  
+    return;
 }
 
 void alterar_in_economico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
 {
-    
+    /* Primeiro, tentamos encontrar as cidades de origem e destino no mapa. */
     Cidade *c1 = procura_cidade(m, cidade_origem);
     Cidade *c2 = procura_cidade(m, cidade_destino);
 
+    /* Se ambas as cidades não existirem */
     if (c1 == NULL && c2 == NULL){
         ERROR_NO_CITY(cidade_origem);
         ERROR_NO_CITY(cidade_destino);
         return;
     }
+
+    /* Se apenas a cidade de origem não existir */
     if (c1 == NULL){
         ERROR_NO_CITY(cidade_origem);
         return;
     }
+
+    /* Se apenas a cidade de destino não existir */
     if (c2 == NULL){
         ERROR_NO_CITY(cidade_destino);
         return;
     }
 
+    /* Tentando encontrar ligacao da cidade origem com a cidade destino. */
     Lig *ligacao = c1->first;
     while (ligacao)
     {
+        /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
         if (strcmp(ligacao->destino, c2->codigo) == 0){
+            if (indice < 0){
+                return;
+                }
+            
             ligacao->indiceEconomico = indice;
             return;
         }
+        /* Se a ligação atual não for a correta, passamos para a próxima ligação na lista. */
         ligacao = ligacao->nextL;
     }
-    
 
+    /* Se chegamos até aqui, significa que não encontramos uma ligação entre a cidade de origem e a cidade de destino */
     ERROR_NO_LINK(cidade_origem,cidade_destino);
     return;
 }
 
 void alterar_in_temporal(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
 {
-        Cidade *c1 = procura_cidade(m, cidade_origem);
+    /* Primeiro, tentamos encontrar as cidades de origem e destino no mapa. */
+    Cidade *c1 = procura_cidade(m, cidade_origem);
     Cidade *c2 = procura_cidade(m, cidade_destino);
 
+    /* Se ambas as cidades não existirem */
     if (c1 == NULL && c2 == NULL){
         ERROR_NO_CITY(cidade_origem);
         ERROR_NO_CITY(cidade_destino);
         return;
     }
+
+    /* Se apenas a cidade de origem não existir */
     if (c1 == NULL){
         ERROR_NO_CITY(cidade_origem);
         return;
     }
+
+    /* Se apenas a cidade de destino não existir */
     if (c2 == NULL){
         ERROR_NO_CITY(cidade_destino);
         return;
     }
 
+    /* Tentando encontrar ligacao da cidade origem com a cidade destino. */
     Lig *ligacao = c1->first;
     while (ligacao)
     {
+        /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
         if (strcmp(ligacao->destino, c2->codigo) == 0){
+            if (indice < 0){
+                return;
+                }
             ligacao->indiceTemporal = indice;
             return;
         }
+        /* Se a ligação atual não for a correta, passamos para a próxima ligação na lista. */
         ligacao = ligacao->nextL;
     }
-    
 
+    /* Se chegamos até aqui, significa que não encontramos uma ligação entre a cidade de origem e a cidade de destino */
     ERROR_NO_LINK(cidade_origem,cidade_destino);
     return;
 }
@@ -557,7 +592,7 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */
     /* Se cheguei aqui existe e vou apagar a cidade */
     m->numCidades--;
 
-    /* Case seja a única cidade */ 
+    /* Caso seja a única cidade */ 
     if (c->nextC == NULL && c->prevC == NULL)
     {
         free(c);
@@ -584,15 +619,15 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */
         return;
     }
     
-    /* se cheguei aqui */ 
-    /* Caso Geral - Apagar no meio */ 
+    /* Caso seja a do meio */ 
     c->prevC->nextC = c->nextC;
     c->nextC->prevC = c->prevC;
     free(c);
     return;
 }
 
-void guardar_file()/* ADICIONADO POR ELISEU */{}
+void guardar_file()/* ADICIONADO POR ELISEU */
+{   }
 
 void free_mapa(Mapa *m)/** RUBEN ADCIONADO **/ {
     /* Inicializa o ponteiro percorre_cidades com a primeira cidade do mapa */
@@ -630,14 +665,3 @@ void free_mapa(Mapa *m)/** RUBEN ADCIONADO **/ {
     m->lastC = NULL;
     m->numCidades = 0;
 }
-
-
-
-
-
-
-
-
-
-
-
