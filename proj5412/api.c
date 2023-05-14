@@ -6,7 +6,7 @@
  * ######### Funções internas da biblioteca #########
  * ##################################################
  **/
-Mapa *new_mapa() /** ADICIONADO POR RUBEN */
+Mapa *new_mapa() 
 {
     Mapa *m = malloc(sizeof(Mapa));
     m->firstC = NULL;
@@ -15,7 +15,7 @@ Mapa *new_mapa() /** ADICIONADO POR RUBEN */
     return m;
 }
 
-Cidade *procura_cidade(Mapa *m, char *codigo) /** ADICIONADO POR RUBEN */
+Cidade *procura_cidade(Mapa *m, char *codigo) 
 {
     /* Inicializa o ponteiro aux com a primeira cidade do mapa */
     Cidade *aux = m->firstC;
@@ -36,7 +36,7 @@ Cidade *procura_cidade(Mapa *m, char *codigo) /** ADICIONADO POR RUBEN */
     return NULL;
 }
 
-Cidade *percorre_cidades(Cidade *cidade_atual) /** ADICIONADO POR RUBEN */
+Cidade *percorre_cidades(Cidade *cidade_atual) 
 {
     /** Retorna o ponteiro para a próxima cidade na lista **/
     if (cidade_atual != NULL)
@@ -48,7 +48,7 @@ Cidade *percorre_cidades(Cidade *cidade_atual) /** ADICIONADO POR RUBEN */
     return NULL;
 }
 
-Lig *procura_ligacoes(Cidade *cidade, char *codigo_destino) /** ADICIONADO POR RUBEN */
+Lig *procura_ligacoes(Cidade *cidade, char *codigo_destino) 
 {
     /* Inicializa o ponteiro aux com a primeira ligação da cidade */
     Lig *aux = cidade->first;
@@ -68,7 +68,7 @@ Lig *procura_ligacoes(Cidade *cidade, char *codigo_destino) /** ADICIONADO POR R
     return NULL;
 }
 
-Lig *percorre_ligacoes(Lig *cidade_atual) /** ADICIONADO POR RUBEN */
+Lig *percorre_ligacoes(Lig *cidade_atual) 
 {
     /** Retorna o ponteiro para a próxima cidade na lista **/
     if (cidade_atual != NULL)
@@ -80,12 +80,71 @@ Lig *percorre_ligacoes(Lig *cidade_atual) /** ADICIONADO POR RUBEN */
     return NULL;
 }
 
+void change_indice(Mapa *m, char *codigo_origem, char *codigo_last, float indice, char type) {
+    /* Utiliza a função procura_cidade para encontrar a cidade de origem */
+    Cidade *first = procura_cidade(m, codigo_origem);
+
+    /* Utiliza a função procura_cidade para encontrar a cidade de destino */
+    Cidade *last = procura_cidade(m, codigo_last);
+
+    /* Verifica se ambas as cidades não existem e exibe erros, caso necessário */
+    if (first == NULL && last == NULL) {
+        ERROR_NO_CITY(codigo_origem);
+        ERROR_NO_CITY(codigo_last);
+        return;
+    }
+
+    /* Verifica se a cidade de origem não existe e exibe erro */
+    if (first == NULL) {
+        ERROR_NO_CITY(codigo_origem);
+        return;
+    }
+
+    /* Verifica se a cidade de destino não existe e exibe erro */
+    if (last == NULL) {
+        ERROR_NO_CITY(codigo_last);
+        return;
+    }
+
+    /* Verifica se as cidades de origem e destino são as mesmas e exibe erro */
+    if (first->codigo == last->codigo) {
+        ERROR_CITY_REPEATED(first->codigo);
+        return;
+    }
+
+    /* Procura a ligação na cidade de origem */
+    Lig *aux = procura_ligacoes(first, codigo_last);
+
+    /* Se a ligação não for encontrada, exibe um erro e retorna */
+    if (aux == NULL) {
+        ERROR_NO_LINK(codigo_origem, codigo_last);
+        return;
+    }
+
+    /* Altera o índice turístico, econômico ou temporal, conforme especificado pelo parâmetro 'type' */
+    if (type == 'T') {
+        aux->indiceTuristico = indice;
+        printf("%.2f\n", aux->indiceTuristico);
+        return;
+    } 
+    if (type == 'E') {
+        aux->indiceEconomico = indice;
+        printf("%.2f\n", aux->indiceEconomico);
+        return;
+    }
+    if (type == 'H') {
+        aux->indiceTemporal = indice; 
+        printf("%.2f\n", aux->indiceTemporal); 
+        return;
+    }
+
+}
 
 /**
  * ######### Implementação das Funções da Biblioteca#########
  * ###########################################################
  **/
-void adicionar_cidade(Mapa *m, char *codigo, char *nome) /** ADICIONADO POR RUBEN */
+void adicionar_cidade(Mapa *m, char *codigo, char *nome) 
 {
    /** Utiliza a função procura_cidade para verificar se a cidade já existe **/
     Cidade *cidade_existente = procura_cidade(m, codigo);
@@ -111,10 +170,14 @@ void adicionar_cidade(Mapa *m, char *codigo, char *nome) /** ADICIONADO POR RUBE
         aux = aux->nextC;
     }
 
-    /** Incrementa o contador de cidades **/
-    m->numCidades++;
-    /** Aloca memória para a nova cidade e inicializa seus atributos **/
-    nova_cidade = malloc(sizeof(Cidade));
+     nova_cidade = malloc(sizeof(Cidade));
+
+    
+    nova_cidade->first = NULL;
+    nova_cidade->last = NULL;
+    nova_cidade->numLigacoes = 0;
+    nova_cidade->estado = 1; 
+    
     memset(nova_cidade->codigo, '\0', CITY_ID + 1);
     strncpy(nova_cidade->codigo, codigo, CITY_ID);
 
@@ -123,8 +186,8 @@ void adicionar_cidade(Mapa *m, char *codigo, char *nome) /** ADICIONADO POR RUBE
     strncpy(nova_cidade->nome, nome, MAX_CITY_NAME);
     nova_cidade->nome[MAX_CITY_NAME] = '\0';
 
-    nova_cidade->numLigacoes = 0;
-    nova_cidade->estado = 1;
+    nova_cidade->nextC = NULL;
+    nova_cidade->prevC = NULL;
 
     /** Se a lista de cidades estiver vazia, insere a nova cidade como única na lista **/
     if (m->firstC == NULL)
@@ -162,7 +225,7 @@ void adicionar_cidade(Mapa *m, char *codigo, char *nome) /** ADICIONADO POR RUBE
     aux->prevC = nova_cidade;  
 }
 
-void altera_estado(Mapa *m, char *codigo, int estado) {  /* ADICIONADO POR ESTHER - O */
+void altera_estado(Mapa *m, char *codigo, int estado) {  
 
     /* Procura a cidade no mapa usando o código fornecido */
     Cidade *city = procura_cidade(m, codigo);
@@ -183,7 +246,7 @@ void altera_estado(Mapa *m, char *codigo, int estado) {  /* ADICIONADO POR ESTHE
     
 }
 
-void devolve_info_cidade(Mapa *m, char *codigo, int estado) { /* ADICIONADO POR ESTHER, implementar mais..   - Y */
+void devolve_info_cidade(Mapa *m, char *codigo, int estado) { 
 
     /* Procura a cidade no mapa usando o código fornecido */
     Cidade *info = procura_cidade(m, codigo);
@@ -219,7 +282,7 @@ void devolve_info_cidade(Mapa *m, char *codigo, int estado) { /* ADICIONADO POR 
 
 }
 
-void print_cidades(Mapa *m)/** ADICIONADO POR RUBEN */
+void print_cidades(Mapa *m)
 {
     /** Caso BaseDados Vazia**/
     if (m->firstC == NULL)
@@ -242,7 +305,7 @@ void print_cidades(Mapa *m)/** ADICIONADO POR RUBEN */
     
 }
 
-void total_cidades(Mapa *m)/** ADICIONADO POR RUBEN */
+void total_cidades(Mapa *m)
 {
     /* Caso o banco de dados esteja vazio */
 
@@ -257,7 +320,7 @@ void total_cidades(Mapa *m)/** ADICIONADO POR RUBEN */
     
 }
 
-void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){ /* ADICIONADO POR ESTHER */
+void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){ 
 
  Cidade *addliga_origem = procura_cidade(m, codigo_origem); /*origem*/
  Cidade *addliga2_destino = procura_cidade(m, cod_destino); /*destino*/
@@ -326,9 +389,8 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){ /
     
 }
 
-void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last) /** RUBEN ADCIONADO **/
+void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last) 
 {
-
     /* Procura a cidade de origem no mapa */
     Cidade *first = procura_cidade(m, codigo_origem);
 
@@ -387,146 +449,19 @@ void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last) /** RUBEN ADC
     free(last);
 }
 
-void alterar_in_turistico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
-{
-     /* Primeiro, tentamos encontrar as cidades de origem e destino no mapa. */
-    Cidade *c1 = procura_cidade(m, cidade_origem);
-    Cidade *c2 = procura_cidade(m, cidade_destino);
-
-    /* Se ambas as cidades não existirem */
-    if (c1 == NULL && c2 == NULL){
-        ERROR_NO_CITY(cidade_origem);
-        ERROR_NO_CITY(cidade_destino);
-        return;
-    }
-
-    /* Se apenas a cidade de origem não existir */
-    if (c1 == NULL){
-        ERROR_NO_CITY(cidade_origem);
-        return;
-    }
-
-    /* Se apenas a cidade de destino não existir */
-    if (c2 == NULL){
-        ERROR_NO_CITY(cidade_destino);
-        return;
-    }
-
-    /* Tentando encontrar ligacao da cidade origem com a cidade destino. */
-    Lig *ligacao = c1->first;
-    while (ligacao)
-    {
-        /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
-        if (strcmp(ligacao->destino, c2->codigo) == 0){
-            if (indice < 0 && indice > 1000){
-                return;
-                }
-            ligacao->indiceTuristico = indice;
-            return;
-        }
-        /* Se a ligação atual não for a correta, passamos para a próxima ligação na lista. */
-        ligacao = ligacao->nextL;
-    }
-
-    /* Se chegamos até aqui, significa que não encontramos uma ligação entre a cidade de origem e a cidade de destino */
-    ERROR_NO_LINK(cidade_origem,cidade_destino);
-    return;
+void change_turismo(Mapa *m, char *codigo_origem, char *codigo_last, float indice_t) {
+    change_indice(m, codigo_origem, codigo_last, indice_t, 'T');
 }
 
-void alterar_in_economico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
-{
-    /* Primeiro, tentamos encontrar as cidades de origem e destino no mapa. */
-    Cidade *c1 = procura_cidade(m, cidade_origem);
-    Cidade *c2 = procura_cidade(m, cidade_destino);
-
-    /* Se ambas as cidades não existirem */
-    if (c1 == NULL && c2 == NULL){
-        ERROR_NO_CITY(cidade_origem);
-        ERROR_NO_CITY(cidade_destino);
-        return;
-    }
-
-    /* Se apenas a cidade de origem não existir */
-    if (c1 == NULL){
-        ERROR_NO_CITY(cidade_origem);
-        return;
-    }
-
-    /* Se apenas a cidade de destino não existir */
-    if (c2 == NULL){
-        ERROR_NO_CITY(cidade_destino);
-        return;
-    }
-
-    /* Tentando encontrar ligacao da cidade origem com a cidade destino. */
-    Lig *ligacao = c1->first;
-    while (ligacao)
-    {
-        /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
-        if (strcmp(ligacao->destino, c2->codigo) == 0){
-            if (indice < 0 && indice > 1000){
-                return;
-                }
-            
-            ligacao->indiceEconomico = indice;
-            return;
-        }
-        /* Se a ligação atual não for a correta, passamos para a próxima ligação na lista. */
-        ligacao = ligacao->nextL;
-    }
-
-    /* Se chegamos até aqui, significa que não encontramos uma ligação entre a cidade de origem e a cidade de destino */
-    ERROR_NO_LINK(cidade_origem,cidade_destino);
-    return;
+void change_economico(Mapa *m, char *codigo_origem, char *codigo_last, float indice_e) {
+    change_indice(m, codigo_origem, codigo_last, indice_e, 'E');
 }
 
-void alterar_in_temporal(Mapa *m, char *cidade_origem, char *cidade_destino, double indice)/* ADICIONADO POR ELISEU */
-{
-    /* Primeiro, tentamos encontrar as cidades de origem e destino no mapa. */
-    Cidade *c1 = procura_cidade(m, cidade_origem);
-    Cidade *c2 = procura_cidade(m, cidade_destino);
-
-    /* Se ambas as cidades não existirem */
-    if (c1 == NULL && c2 == NULL){
-        ERROR_NO_CITY(cidade_origem);
-        ERROR_NO_CITY(cidade_destino);
-        return;
-    }
-
-    /* Se apenas a cidade de origem não existir */
-    if (c1 == NULL){
-        ERROR_NO_CITY(cidade_origem);
-        return;
-    }
-
-    /* Se apenas a cidade de destino não existir */
-    if (c2 == NULL){
-        ERROR_NO_CITY(cidade_destino);
-        return;
-    }
-
-    /* Tentando encontrar ligacao da cidade origem com a cidade destino. */
-    Lig *ligacao = c1->first;
-    while (ligacao)
-    {
-        /* Se encontrarmos a ligação correta, alteramos o índice temporal e terminamos a execução da função. */
-        if (strcmp(ligacao->destino, c2->codigo) == 0){
-            if (indice < 0 && indice > 1000){
-                return;
-                }
-            ligacao->indiceTemporal = indice;
-            return;
-        }
-        /* Se a ligação atual não for a correta, passamos para a próxima ligação na lista. */
-        ligacao = ligacao->nextL;
-    }
-
-    /* Se chegamos até aqui, significa que não encontramos uma ligação entre a cidade de origem e a cidade de destino */
-    ERROR_NO_LINK(cidade_origem,cidade_destino);
-    return;
+void change_temporal(Mapa *m,char *codigo_origem, char *codigo_last, float indice_h){
+    change_indice(m, codigo_origem, codigo_last, indice_h, 'H');
 }
 
-void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */
+void remover_cidade(Mapa *m, char *cidade)
 {
     Cidade *c = procura_cidade(m, cidade);
     if (c == NULL)
@@ -592,7 +527,7 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */
     /* Se cheguei aqui existe e vou apagar a cidade */
     m->numCidades--;
 
-    /* Caso seja a única cidade */ 
+    /* Case seja a única cidade */ 
     if (c->nextC == NULL && c->prevC == NULL)
     {
         free(c);
@@ -619,17 +554,44 @@ void remover_cidade(Mapa *m, char *cidade)/* ADICIONADO POR ELISEU */
         return;
     }
     
-    /* Caso seja a do meio */ 
+    /* se cheguei aqui */ 
+    /* Caso Geral - Apagar no meio */ 
     c->prevC->nextC = c->nextC;
     c->nextC->prevC = c->prevC;
     free(c);
     return;
 }
 
-void guardar_file()/* ADICIONADO POR ELISEU */
-{   }
+void guardar_file()/* ADICIONADO POR ELISEU */{}
+/*
+void save_data(Mapa *m, const char *file_name) {
+    FILE *f;
+    Cidade *cidade;
+    Lig *ligacao;
 
-void free_mapa(Mapa *m)/** RUBEN ADCIONADO **/ {
+    f = fopen(file_name, "w");
+    if (!f) {
+        perror("Erro ao abrir o arquivo");
+        exit(EXIT_FAILURE);
+    }
+
+    for (cidade = m->firstC; cidade != NULL; cidade = cidade->nextC) {
+        fprintf(f, ADD_CITY, cidade->codigo, cidade->nome);
+
+        for (ligacao = cidade->first; ligacao != NULL; ligacao = ligacao->nextL) {
+            fprintf(f, ADD_LINK, cidade->codigo, ligacao->destino);
+            fprintf(f, CHANGE_TURISTIC_INDEX, cidade->codigo, ligacao->destino, ligacao->indiceTuristico);
+            fprintf(f, CHANGE_ECONOMIC_INDEX, cidade->codigo, ligacao->destino, ligacao->indiceEconomico);
+            fprintf(f, CHANGE_TIME_INDEX , cidade->codigo, ligacao->destino, ligacao->indiceTemporal);
+        }
+    }
+
+    fclose(f);
+}
+
+*/
+
+void free_mapa(Mapa *m){
     /* Inicializa o ponteiro percorre_cidades com a primeira cidade do mapa */
     Cidade *percorre_cidades = m->firstC;
 
@@ -653,6 +615,9 @@ void free_mapa(Mapa *m)/** RUBEN ADCIONADO **/ {
         /* Armazena o ponteiro para a próxima cidade */
         Cidade *prox_cidade = percorre_cidades->nextC;
 
+        /* Libera a memória alocada para o nome da cidade atual */
+        free(percorre_cidades->nome);
+        
         /* Libera a memória alocada para a cidade atual */
         free(percorre_cidades);
 
@@ -664,4 +629,17 @@ void free_mapa(Mapa *m)/** RUBEN ADCIONADO **/ {
     m->firstC = NULL;
     m->lastC = NULL;
     m->numCidades = 0;
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+

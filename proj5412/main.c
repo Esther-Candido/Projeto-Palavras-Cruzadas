@@ -58,7 +58,7 @@ void executeCommand(char *line)
         memset(attr1,'\0',CITY_ID + 1);
         memset(attr2,'\0',CITY_ID + 1);
         strncpy(attr1, &line[2], CITY_ID);
-        strncpy(attr1, &line[6], CITY_ID);
+        strncpy(attr2, &line[6], CITY_ID);
         free_ligacao(m,attr1,attr2);
         break;
     case 'T': /*Altera indice turistico*/
@@ -69,7 +69,7 @@ void executeCommand(char *line)
         strncpy(attr2, &line[6], CITY_ID);
         memset(attrindice, '\0', MAX_INDICE_LENGHT + 1);
         strncpy(attrindice, &line[10], MAX_INDICE_LENGHT);
-        alterar_in_turistico(m, attr1, attr2, atof(attrindice));
+        change_turismo(m, attr1, attr2, atof(attrindice));
         break;
 
     case 'E': /*altera indice económico*/
@@ -80,7 +80,7 @@ void executeCommand(char *line)
         strncpy(attr2, &line[6], CITY_ID);
         memset(attrindice, '\0', MAX_INDICE_LENGHT + 1);
         strncpy(attrindice, &line[10], MAX_INDICE_LENGHT);
-        alterar_in_economico(m, attr1, attr2, atof(attrindice));
+        change_economico(m, attr1, attr2, atof(attrindice));
         break;
 
     case 'H': /*Altera indice temporal*/
@@ -91,7 +91,7 @@ void executeCommand(char *line)
         strncpy(attr2, &line[6], CITY_ID);
         memset(attrindice, '\0', MAX_INDICE_LENGHT + 1);
         strncpy(attrindice, &line[10], MAX_INDICE_LENGHT);
-        alterar_in_temporal(m, attr1, attr2, atof(attrindice));
+        change_temporal(m, attr1, attr2, atof(attrindice));
         break;
 
     case 'P': /*Apaga Cidade*/

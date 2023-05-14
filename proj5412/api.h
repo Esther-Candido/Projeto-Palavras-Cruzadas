@@ -80,6 +80,7 @@ typedef struct mapa {
 
 
 
+
 /**
  * API - Declaração das funções públicas
  * 
@@ -90,7 +91,9 @@ typedef struct mapa {
  * 
  * @return Ponteiro para a estrutura Mapa recém-criada
  */
-Mapa *new_mapa(); /** RUBEN ADCIONADO **/
+Mapa *new_mapa(); 
+
+void change_indice(Mapa *m, char *codigo_origem, char *codigo_last, float indice, char type);
 
 /**
  * @brief Adiciona uma nova cidade ao mapa, mantendo a lista de cidades em ordem alfabética
@@ -99,7 +102,7 @@ Mapa *new_mapa(); /** RUBEN ADCIONADO **/
  * @param codigo Código da cidade a ser adicionada
  * @param nome Nome da cidade a ser adicionada
  */
-void adicionar_cidade(Mapa *m,char *codigo,char *nome);  /** RUBEN ADCIONADO **/
+void adicionar_cidade(Mapa *m,char *codigo,char *nome);  
 
 /**
  * @brief Altera o estado de uma cidade no mapa
@@ -108,7 +111,7 @@ void adicionar_cidade(Mapa *m,char *codigo,char *nome);  /** RUBEN ADCIONADO **/
  * @param codigo Código da cidade cujo estado será alterado
  * @param estado Novo estado da cidade (1 para ativo, 0 para inativo)
  */
-void altera_estado(Mapa *m, char *codigo, int estado); /* ESTHER ADICIONADO - O */
+void altera_estado(Mapa *m, char *codigo, int estado); 
 
 /**
  * @brief Exibe informações sobre uma cidade no mapa
@@ -117,21 +120,21 @@ void altera_estado(Mapa *m, char *codigo, int estado); /* ESTHER ADICIONADO - O 
  * @param codigo Código da cidade cujas informações serão exibidas
  * @param estado Nível de detalhamento das informações (0 para reduzido, 1 para completo)
  */
-void devolve_info_cidade(Mapa *m, char *codigo, int estado); /* ESTHER ADICIONADO - Y */
+void devolve_info_cidade(Mapa *m, char *codigo, int estado); 
 
 /**
  * @brief Imprime informações sobre todas as cidades no mapa
  * 
  * @param m Ponteiro para o mapa que contém as cidades
  */
-void print_cidades(Mapa *m); /** RUBEN ADCIONADO **/
+void print_cidades(Mapa *m); 
 
 /**
  * @brief Imprime o número total de cidades no mapa
  * 
  * @param m Ponteiro para o mapa que contém as cidades
  */
-void total_cidades(Mapa *m);/** RUBEN ADCIONADO **/
+void total_cidades(Mapa *m);
 
 /**
  * @brief Adiciona uma ligação entre duas cidades no mapa
@@ -140,7 +143,7 @@ void total_cidades(Mapa *m);/** RUBEN ADCIONADO **/
  * @param codigo_origem Código da cidade de origem
  * @param cod_destino Código da cidade de destino
  */
-void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino); /* ESTHER ADICIONADO  - C */
+void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino);
 
 /**
  * @brief Remove uma ligação entre duas cidades no mapa e libera a memória alocada
@@ -151,35 +154,11 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino); /* ESTHE
  */
 void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last);
 
-/**
- * @brief Remove uma cidade e todas as suas ligações do mapa e libera a memória alocada
- * 
- * @param m Ponteiro para o mapa que contém as cidades
- * @param cidade_origem 
- * @param cidade_destino 
- * @param indice
- */
-void alterar_in_turistico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice); /* ADICIONADO POR ELISEU */
+void change_turismo(Mapa *m,char *codigo_origem, char *codigo_last, float indice_t);
 
-/**
- * @brief Remove uma cidade e todas as suas ligações do mapa e libera a memória alocada
- * 
- * @param m Ponteiro para o mapa que contém as cidades
- * @param cidade_origem 
- * @param cidade_destino 
- * @param indice
- */
-void alterar_in_economico(Mapa *m, char *cidade_origem, char *cidade_destino, double indice); /* ADICIONADO POR ELISEU */
+void change_economico(Mapa *m,char *codigo_origem, char *codigo_last, float indice_e);
 
-/**
- * @brief Remove uma cidade e todas as suas ligações do mapa e libera a memória alocada
- * 
- * @param m Ponteiro para o mapa que contém as cidades
- * @param cidade_origem 
- * @param cidade_destino 
- * @param indice
- */
-void alterar_in_temporal(Mapa *m, char *cidade_origem, char *cidade_destino, double indice); /* ADICIONADO POR ELISEU */
+void change_temporal(Mapa *m,char *codigo_origem, char *codigo_last, float indice_h);
 
 /**
  * @brief Remove uma cidade e todas as suas ligações do mapa e libera a memória alocada
@@ -187,9 +166,9 @@ void alterar_in_temporal(Mapa *m, char *cidade_origem, char *cidade_destino, dou
  * @param m Ponteiro para o mapa que contém as cidades
  * @param cidade Código da cidade a ser removida
  */
-void remover_cidade(Mapa *m, char *cidade); /* ADICIONADO POR ELISEU */
+void remover_cidade(Mapa *m, char *cidade); 
 
-void guardar_file(); /* ADICIONADO POR ELISEU */
+void guardar_file(); 
 
 /**
  * @brief Libera a memória alocada para todas as cidades e ligações do mapa e reinicializa o mapa
