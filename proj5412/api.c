@@ -591,46 +591,30 @@ void save_data(Mapa *m, const char *file_name) {
 
 */
 
-void free_mapa(Mapa *m){
-    /* Inicializa o ponteiro percorre_cidades com a primeira cidade do mapa */
-    Cidade *percorre_cidades = m->firstC;
+void free_mapa(Mapa *m) {
+    Cidade *cidade = m->firstC; /* Ponteiro para a primeira cidade no mapa */
 
-    /* Itera através de todas as cidades no mapa */
-    while (percorre_cidades) {
-        /* Inicializa o ponteiro percorre_links com a primeira ligação da cidade atual */
-        Lig *percorre_links = percorre_cidades->first;
+    /* Percorre todas as cidades no mapa */
+    while (cidade != NULL) {
+        Lig *ligacao = cidade->first; /* Ponteiro para a primeira ligação da cidade */
 
-        /* Itera através de todas as ligações da cidade atual */
-        while (percorre_links) {
-            /* Armazena o ponteiro para a próxima ligação */
-            Lig *prox_lig = percorre_links->nextL;
-
-            /* Libera a memória alocada para a ligação atual */
-            free(percorre_links);
-
-            /* Atualiza o ponteiro percorre_links para a próxima ligação */
-            percorre_links = prox_lig;
+        /* Percorre todas as ligações da cidade */
+        while (ligacao != NULL) {
+            Lig *proximaLigacao = ligacao->nextL; /* Ponteiro para a próxima ligação */
+            free(ligacao); /* Libera a memória alocada para a ligação atual */
+            ligacao = proximaLigacao; /* Avança para a próxima ligação */
         }
 
-        /* Armazena o ponteiro para a próxima cidade */
-        Cidade *prox_cidade = percorre_cidades->nextC;
-
-        /* Libera a memória alocada para o nome da cidade atual */
-        free(percorre_cidades->nome);
-        
-        /* Libera a memória alocada para a cidade atual */
-        free(percorre_cidades);
-
-        /* Atualiza o ponteiro percorre_cidades para a próxima cidade */
-        percorre_cidades = prox_cidade;
+        Cidade *proximaCidade = cidade->nextC; /* Ponteiro para a próxima cidade */
+        free(cidade->nome); /* Libera a memória alocada para o nome da cidade */
+        free(cidade); /* Libera a memória alocada para a cidade atual */
+        cidade = proximaCidade; /* Avança para a próxima cidade */
     }
 
-    /* Reinicializa o mapa */
-    m->firstC = NULL;
-    m->lastC = NULL;
-    m->numCidades = 0;
-    
+    free(m); /* Libera a memória alocada para a estrutura do mapa */
 }
+
+
 
 
 
