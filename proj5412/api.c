@@ -656,7 +656,7 @@ void imprime_melhor_rota(Path *todos, int numCidades,char *cidadeOrigem, char *c
                 MSG_ROUTE_HEADER(cidadeOrigem,cidadeDestino,*indice,todos[i].totalValue);
                 MSG_ROUTE_ITEM(todos[i].totalPath);
                 return;
-            } 
+            }
          
         }
     }
@@ -774,10 +774,12 @@ void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino,
         }
     }
 
-    printf("chegou aqui\n");
     /* Imprima a melhor rota para a cidade de destino */
     imprime_melhor_rota(todos, m->numCidades, origem->codigo, destino->codigo, indice);
+    int i;
+    for (i = 0; i < m->numCidades; i++) {
+        free(todos[i].totalPath);
+    }
+    free(todos);
 
-    
-    
 }
