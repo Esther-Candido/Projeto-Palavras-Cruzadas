@@ -1,6 +1,8 @@
+#define _XOPEN_SOURCE 500
 #include <stdlib.h>
 #include <string.h>
 #include "api.h"
+
 
 /**
  * ######### Funções internas da biblioteca #########
@@ -188,7 +190,7 @@ void adicionar_cidade(Mapa *m, char *codigo, char *nome)
 
     nova_cidade->nextC = NULL;
     nova_cidade->prevC = NULL;
-
+    m->numCidades ++;
     /** Se a lista de cidades estiver vazia, insere a nova cidade como única na lista **/
     if (m->firstC == NULL)
     {
@@ -364,9 +366,9 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){
     memset(nova_liga->destino, '\0', CITY_ID + 1);
     strncpy(nova_liga->destino, cod_destino, CITY_ID);
 
-    nova_liga->indiceTemporal = 0;
-    nova_liga->indiceEconomico = 0;
-    nova_liga->indiceTuristico = 0;
+    nova_liga->indiceTemporal = 1.00;
+    nova_liga->indiceEconomico = 1.00;
+    nova_liga->indiceTuristico = 1.00;
     addliga_origem->numLigacoes++;
 
     /*Não existe Ligação? inserir ligação como unica na lista*/
@@ -614,16 +616,168 @@ void free_mapa(Mapa *m) {
     free(m); /* Libera a memória alocada para a estrutura do mapa */
 }
 
+Path *inicializa_todos(Mapa *m, char *cidadeOrigem, char *indice) {
+    Path *todos = malloc(m->numCidades * sizeof(Path));
+    Cidade *c = m->firstC;
+    int i;
+    for (i = 0; i < m->numCidades; i++) {
+        todos[i].cidade = c;
+        todos[i].processed = NAO;
+        todos[i].totalValue = (strcmp(c->codigo, cidadeOrigem) == 0) ? 0 : __DBL_MAX__;
+        if (strcmp(c->codigo, cidadeOrigem) == 0) {
+            todos[i].totalPath = strdup(cidadeOrigem);
+        } else {
+            todos[i].totalPath = NULL;
+        }
+        c = c->nextC;
+    }
+    return todos;
+}
 
 
 
+Bool existe_nao_processado(Path *todos, int numCidades) {
+    int i;
+    for (i = 0; i < numCidades; i++) {
+        if (todos[i].processed == NAO) {
+            return SIM;
+        }
+    }
+    return NAO;
+}
 
 
 
+void imprime_melhor_rota(Path *todos, int numCidades,char *cidadeOrigem, char *cidadeDestino, char *indice) {
+    int i;
+    for (i = 0; i < numCidades; i++) {
+        if (strcmp(todos[i].cidade->codigo, cidadeDestino) == 0) {
+            if (todos[i].totalPath != NULL) {
+                MSG_ROUTE_HEADER(cidadeOrigem,cidadeDestino,*indice,todos[i].totalValue);
+                MSG_ROUTE_ITEM(todos[i].totalPath);
+                return;
+            } 
+         
+        }
+    }
+    ERROR_NO_ROUTE(cidadeOrigem,cidadeDestino);
+}
+
+Path *getPath(Mapa *m, Path *todos, char *id){
+    Path *p = todos;
+    int i;
+
+    for (i = 0; i < m->numCidades; i++)
+    {
+        if ((!strcmp(p->cidade->codigo,id)) && (p->processed == NAO) && (p->cidade->estado == 1))
+        {
+            return p;
+        }
+        p ++;
+    }
+    return NULL;
+}
 
 
+Path *getOpenShortest(Mapa *m, Path *todos) {
+    Path *menor = NULL;
+    int i;
+    for (i = 0; i < m->numCidades; i++) {
+        if (todos[i].processed == NAO && (menor == NULL || todos[i].totalValue < menor->totalValue)) {
+            menor = &todos[i];
+        }
+    }
+    return menor;
+}
+
+char *concatPath(char *p, const char *concat){
+    size_t a = strlen(p);
+    size_t b = strlen(concat);
+    size_t size_ab = a + 2 + b + 1;
+
+    char *dest = malloc(size_ab);
+    if (dest == NULL) {
+        return NULL;
+    }
+
+    sprintf(dest, "%s->%s", p, concat);
+    return dest;
+}
 
 
+double getLinkValue(Lig *l, char *indice){
+    switch (*indice)
+    {
+    case 'H':
+        return l->indiceTemporal;
+        break;
+    case 'E':
+        return l->indiceEconomico;
+        break;
+    case 'T':
+        return l->indiceTuristico;
+        break;
+    }
+    return l->indiceTemporal;
+}
 
+void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino, char *indice) {
 
+    /* Verifica se as cidades de origem e destino existem e estão ativas */
+    Cidade *origem = procura_cidade(m, cidadeOrigem);
+    Cidade *destino = procura_cidade(m, cidadeDestino);
+    if (!origem) {
+        printf("*Cidade %s inexistente\n", cidadeOrigem);
+        return;
+    }
+    if (!destino) {
+        printf("*Cidade %s inexistente\n", cidadeDestino);
+        return;
+    }
+    if (origem->estado == 0) {
+        printf("*Cidade %s inativa\n", cidadeOrigem);
+        return;
+    }
+    if (destino->estado == 0) {
+        printf("*Cidade %s inativa\n", cidadeDestino);
+        return;
+    }
 
+    /* Inicialização */ 
+    Path *todos = inicializa_todos(m, cidadeOrigem, indice);
+
+    /* Enquanto ainda houver cidades não processadas*/
+    while (existe_nao_processado(todos, m->numCidades)) {
+        /* Encontre a cidade não processada com o menor valor total*/
+        Path *p = getOpenShortest(m, todos);
+
+        /* Marque a cidade como processada*/
+        p->processed = SIM;
+
+        /* Atualize os valores totais de todas as cidades vizinhas */
+        Lig *l = p->cidade->first;
+        while (l) {
+            Path *vizinho = getPath(m, todos, l->destino);
+            if (vizinho && vizinho->processed == NAO) {
+                double novoValor = p->totalValue + getLinkValue(l, indice);
+             if (novoValor < vizinho->totalValue) {
+                    vizinho->totalValue = novoValor;
+                    char *newPath = concatPath(p->totalPath, vizinho->cidade->codigo);
+                    if (newPath != NULL) {
+                        free(vizinho->totalPath);
+                        vizinho->totalPath = newPath;
+                    }
+                }
+
+            }
+            l = l->nextL;
+        }
+    }
+
+    printf("chegou aqui\n");
+    /* Imprima a melhor rota para a cidade de destino */
+    imprime_melhor_rota(todos, m->numCidades, origem->codigo, destino->codigo, indice);
+
+    
+    
+}

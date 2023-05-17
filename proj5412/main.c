@@ -6,7 +6,6 @@
 /* Pela Análise da API*/
 #define MAX_LINE 56
 
-
 /* atributos da linha de comandos*/
 char *attr1, *attr2, *attrnome, *attrindice;
 char *comando; /*recebe uma linha do stdin*/
@@ -16,16 +15,16 @@ Mapa *m;
 
 void executeCommand(char *line)
 {
-    
+
     switch (line[0])
     {
     case 'A': /*Adiciona Cidade*/
-        memset(attr1,'\0',CITY_ID + 1);
-        memset(attrnome,'\0',MAX_CITY_NAME + 1);
+        memset(attr1, '\0', CITY_ID + 1);
+        memset(attrnome, '\0', MAX_CITY_NAME + 1);
         strncpy(attr1, &line[2], CITY_ID);
         strncpy(attrnome, &line[6], MAX_CITY_NAME);
         attrnome[strlen(attrnome) - 1] = '\0';
-        adicionar_cidade(m,attr1,attrnome);  
+        adicionar_cidade(m, attr1, attrnome);
         break;
     case 'O': /*Altera estado da cidade*/
         memset(attr1, '\0', CITY_ID + 1);
@@ -41,7 +40,7 @@ void executeCommand(char *line)
         strncpy(attr2, &line[6], 1);
         devolve_info_cidade(m, attr1, atoi(attr2));
         break;
-    case 'Z': /*Lista Todas as Cidades*/  
+    case 'Z': /*Lista Todas as Cidades*/
         print_cidades(m);
         break;
     case 'N': /*Total as Cidades*/
@@ -55,11 +54,11 @@ void executeCommand(char *line)
         adiciona_ligacao_cidade(m, attr1, attr2);
         break;
     case 'I': /*apaga ligação entre cidades*/
-        memset(attr1,'\0',CITY_ID + 1);
-        memset(attr2,'\0',CITY_ID + 1);
+        memset(attr1, '\0', CITY_ID + 1);
+        memset(attr2, '\0', CITY_ID + 1);
         strncpy(attr1, &line[2], CITY_ID);
         strncpy(attr2, &line[6], CITY_ID);
-        free_ligacao(m,attr1,attr2);
+        free_ligacao(m, attr1, attr2);
         break;
     case 'T': /*Altera indice turistico*/
         /*Eliseu*/
@@ -100,7 +99,13 @@ void executeCommand(char *line)
         remover_cidade(m, attr1);
         break;
     case 'R': /*Melhor Rota entre duas cidades*/
-        /* Todos !!!!!!*/
+        memset(attr1, '\0', CITY_ID + 1);
+        strncpy(attr1, &line[2], CITY_ID);
+        memset(attr2, '\0', CITY_ID + 1);
+        strncpy(attr2, &line[6], CITY_ID);
+        memset(attrindice, '\0', MAX_INDICE_LENGHT + 1);
+        strncpy(attrindice, &line[10], MAX_INDICE_LENGHT);
+        melhor_rota_entre_cidades(m, attr1, attr2, attrindice);
         break;
     case 'G': /*Guarda a base de dados*/
         /* Eliseu !!! */
@@ -174,7 +179,7 @@ int main(int argv, char *argc[])
             }
             else
             {
-                importDataFile(); 
+                importDataFile();
             }
         }
     }
