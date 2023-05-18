@@ -707,22 +707,36 @@ void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino,
 
         /* Atualize os valores totais de todas as cidades vizinhas */
         Lig *l = p->cidade->first;
+        
+        /* Este loop passa por todas as ligações (vizinhos) da cidade atual. */
         while (l) {
+            /* A função getPath() é usada para obter a estrutura Path correspondente à cidade destino da ligação atual. */
             Path *vizinho = getPath(m, todos, l->destino);
+
+            /* Se a cidade vizinha existe e ainda não foi processada... */
             if (vizinho && vizinho->processed == NAO) {
+                /* Calcula o novo valor total para o vizinho como a soma do valor total do caminho atual e o valor da ligação. */
                 double novoValor = p->totalValue + getLinkValue(l, indice);
-             if (novoValor < vizinho->totalValue) {
+
+                /* Se o novo valor total for menor que o valor total atual do vizinho... */
+                if (novoValor < vizinho->totalValue) {
+                    /* Atualiza o valor total do vizinho. */
                     vizinho->totalValue = novoValor;
+
+                    /* Concatena o código da cidade vizinha ao caminho total atual. */
                     char *newPath = concatPath(p->totalPath, vizinho->cidade->codigo);
                     if (newPath != NULL) {
+                        /* Libera a memória do caminho total antigo do vizinho e atualiza com o novo caminho. */
                         free(vizinho->totalPath);
                         vizinho->totalPath = newPath;
                     }
                 }
-
             }
+
+            /* Passa para a próxima ligação. */
             l = l->nextL;
         }
+
     }
 
     /* Imprima a melhor rota para a cidade de destino */
