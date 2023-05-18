@@ -142,10 +142,64 @@ void change_indice(Mapa *m, char *codigo_origem, char *codigo_last, float indice
 
 }
 
+Path *inicializa_todos(Mapa *m, char *cidadeOrigem, char *indice) {
+    Path *todos = malloc(m->numCidades * sizeof(Path));  /* Aloca memória para o array de Path */
+    Cidade *c = m->firstC;  /* Ponteiro para a primeira cidade no mapa */
+    int i;
+    for (i = 0; i < m->numCidades; i++) {
+        todos[i].cidade = c;  /* Atribui o ponteiro da cidade atual ao campo cidade do elemento Path correspondente */
+        todos[i].processed = NAO;  /* Define o status de processamento como NAO */
+        todos[i].totalValue = (strcmp(c->codigo, cidadeOrigem) == 0) ? 0 : __DBL_MAX__;  /* Define o valor total do caminho como 0 se a cidade atual for a cidade de origem, caso contrário, define-o como o maior valor possível (__DBL_MAX__) */
+        if (strcmp(c->codigo, cidadeOrigem) == 0) {
+            todos[i].totalPath = strdup(cidadeOrigem);  /* Cria uma cópia da cidade de origem como caminho total */
+        } else {
+            todos[i].totalPath = NULL;  /* Define como NULL para cidades diferentes da cidade de origem */
+        }
+        c = c->nextC;  /* Atualiza o ponteiro para a próxima cidade na próxima iteração do loop */
+    }
+    return todos;  /* Retorna o array de Path inicializado */
+}
+
+Bool existe_nao_processado(Path *todos, int numCidades) {
+    int i;
+    for (i = 0; i < numCidades; i++) {
+        if (todos[i].processed == NAO) {  /* Verifica se o status de processamento do caminho é NAO */
+            return SIM;  /* Retorna SIM se houver pelo menos um caminho não processado */
+        }
+    }
+    return NAO;  /* Retorna NAO se todos os caminhos estiverem processados */
+}
+
+Path *getPath(Mapa *m, Path *todos, char *id) {
+    Path *p = todos;  /* Inicializa o ponteiro p para o array de caminhos todos */
+    int i;
+
+    for (i = 0; i < m->numCidades; i++) {
+        if ((!strcmp(p->cidade->codigo, id)) && (p->processed == NAO) && (p->cidade->estado == 1)) {
+            return p;  /* Retorna o caminho p se as condições forem atendidas */
+        }
+        p++;  /* Avança para o próximo elemento do array de caminhos */
+    }
+    return NULL;  /* Retorna NULL se nenhum caminho correspondente for encontrado */
+}
+
+Path *getOpenShortest(Mapa *m, Path *todos) {
+    Path *menor = NULL;  /* Inicializa um ponteiro menor como NULL */
+    int i;
+    for (i = 0; i < m->numCidades; i++) {
+        if (todos[i].processed == NAO && (menor == NULL || todos[i].totalValue < menor->totalValue)) {
+            menor = &todos[i];  /* Atualiza o ponteiro menor se as condições forem atendidas */
+        }
+    }
+    return menor;  /* Retorna o ponteiro menor */
+}
+
+
 /**
  * ######### Implementação das Funções da Biblioteca#########
  * ###########################################################
  **/
+
 void adicionar_cidade(Mapa *m, char *codigo, char *nome) 
 {
    /** Utiliza a função procura_cidade para verificar se a cidade já existe **/
@@ -241,11 +295,6 @@ void altera_estado(Mapa *m, char *codigo, int estado) {
 
     /* Atualiza o estado da cidade para o novo valor */
     city->estado = estado;
-
-    /* Para entrega do projeto, apagar este print */
-    printf("teste: O %s estado %d\n", city->nome, estado);
-    
-    
 }
 
 void devolve_info_cidade(Mapa *m, char *codigo, int estado) { 
@@ -357,9 +406,9 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){
     Lig *liga = procura_ligacoes(addliga_origem, cod_destino);
 
         if (liga != NULL && strcmp(liga->destino, cod_destino) == 0){
-                printf("Ligaçao repetida\n");
+         
                 return;
-                }
+            }
 
     /*Criar estrutura para as ligações, alocar memoria*/
     Lig *nova_liga = malloc(sizeof(Lig));
@@ -378,7 +427,6 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){
         nova_liga->prevL = NULL; /* o prevL é igual vazio */
         addliga_origem->first = nova_liga; /*id cidade origem da primeira é igual = NOVA_LIGA*/
         addliga_origem->last = nova_liga; /*id cidade origem da ultima é igual = NOVA_LIGA*/
-        printf("teste: inseriu vazia lista\n");
         return;
     }
 
@@ -387,7 +435,6 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){
     nova_liga->prevL = addliga_origem->last; /*Voltar no ponteiro e definir que o nextL agora é o last*/
     nova_liga->nextL = NULL;  /*Deixar o nextL como NULL para dar abertura a receber novas ligações*/
     addliga_origem->last = nova_liga; /* a ligação LAST sera a nova_liga*/
-    printf("inseriu lig na ultima\n");
     
 }
 
@@ -564,35 +611,6 @@ void remover_cidade(Mapa *m, char *cidade)
     return;
 }
 
-    
-/*
-void save_data(Mapa *m, const char *file_name) {
-    FILE *f;
-    Cidade *cidade;
-    Lig *ligacao;
-
-    f = fopen(file_name, "w");
-    if (!f) {
-        perror("Erro ao abrir o arquivo");
-        exit(EXIT_FAILURE);
-    }
-
-    for (cidade = m->firstC; cidade != NULL; cidade = cidade->nextC) {
-        fprintf(f, ADD_CITY, cidade->codigo, cidade->nome);
-
-        for (ligacao = cidade->first; ligacao != NULL; ligacao = ligacao->nextL) {
-            fprintf(f, ADD_LINK, cidade->codigo, ligacao->destino);
-            fprintf(f, CHANGE_TURISTIC_INDEX, cidade->codigo, ligacao->destino, ligacao->indiceTuristico);
-            fprintf(f, CHANGE_ECONOMIC_INDEX, cidade->codigo, ligacao->destino, ligacao->indiceEconomico);
-            fprintf(f, CHANGE_TIME_INDEX , cidade->codigo, ligacao->destino, ligacao->indiceTemporal);
-        }
-    }
-
-    fclose(f);
-}
-
-*/
-
 void free_mapa(Mapa *m) {
     Cidade *cidade = m->firstC; /* Ponteiro para a primeira cidade no mapa */
 
@@ -616,109 +634,47 @@ void free_mapa(Mapa *m) {
     free(m); /* Libera a memória alocada para a estrutura do mapa */
 }
 
-Path *inicializa_todos(Mapa *m, char *cidadeOrigem, char *indice) {
-    Path *todos = malloc(m->numCidades * sizeof(Path));
-    Cidade *c = m->firstC;
-    int i;
-    for (i = 0; i < m->numCidades; i++) {
-        todos[i].cidade = c;
-        todos[i].processed = NAO;
-        todos[i].totalValue = (strcmp(c->codigo, cidadeOrigem) == 0) ? 0 : __DBL_MAX__;
-        if (strcmp(c->codigo, cidadeOrigem) == 0) {
-            todos[i].totalPath = strdup(cidadeOrigem);
-        } else {
-            todos[i].totalPath = NULL;
-        }
-        c = c->nextC;
-    }
-    return todos;
-}
-
-
-
-Bool existe_nao_processado(Path *todos, int numCidades) {
-    int i;
-    for (i = 0; i < numCidades; i++) {
-        if (todos[i].processed == NAO) {
-            return SIM;
-        }
-    }
-    return NAO;
-}
-
-
-
-void imprime_melhor_rota(Path *todos, int numCidades,char *cidadeOrigem, char *cidadeDestino, char *indice) {
+void imprime_melhor_rota(Path *todos, int numCidades, char *cidadeOrigem, char *cidadeDestino, char *indice) {
     int i;
     for (i = 0; i < numCidades; i++) {
         if (strcmp(todos[i].cidade->codigo, cidadeDestino) == 0) {
             if (todos[i].totalPath != NULL) {
-                MSG_ROUTE_HEADER(cidadeOrigem,cidadeDestino,*indice,todos[i].totalValue);
+                MSG_ROUTE_HEADER(cidadeOrigem, cidadeDestino, *indice, todos[i].totalValue);
                 MSG_ROUTE_ITEM(todos[i].totalPath);
-                return;
+                return;  /* Retorna após imprimir a melhor rota */
             }
-         
         }
     }
-    ERROR_NO_ROUTE(cidadeOrigem,cidadeDestino);
+    ERROR_NO_ROUTE(cidadeOrigem, cidadeDestino);  /* Imprime uma mensagem de erro se não houver rota disponível */
 }
 
-Path *getPath(Mapa *m, Path *todos, char *id){
-    Path *p = todos;
-    int i;
+char *concatPath(char *p, const char *concat) {
+    size_t a = strlen(p);  /* Tamanho da string p */
+    size_t b = strlen(concat);  /* Tamanho da string concat */
+    size_t size_ab = a + 2 + b + 1;  /* Tamanho necessário para a nova string concatenada */
 
-    for (i = 0; i < m->numCidades; i++)
-    {
-        if ((!strcmp(p->cidade->codigo,id)) && (p->processed == NAO) && (p->cidade->estado == 1))
-        {
-            return p;
-        }
-        p ++;
-    }
-    return NULL;
-}
-
-
-Path *getOpenShortest(Mapa *m, Path *todos) {
-    Path *menor = NULL;
-    int i;
-    for (i = 0; i < m->numCidades; i++) {
-        if (todos[i].processed == NAO && (menor == NULL || todos[i].totalValue < menor->totalValue)) {
-            menor = &todos[i];
-        }
-    }
-    return menor;
-}
-
-char *concatPath(char *p, const char *concat){
-    size_t a = strlen(p);
-    size_t b = strlen(concat);
-    size_t size_ab = a + 2 + b + 1;
-
-    char *dest = malloc(size_ab);
+    char *dest = malloc(size_ab);  /* Aloca memória para a nova string concatenada */
     if (dest == NULL) {
-        return NULL;
+        return NULL;  /* Retorna NULL em caso de falha na alocação de memória */
     }
 
-    sprintf(dest, "%s->%s", p, concat);
-    return dest;
+    sprintf(dest, "%s->%s", p, concat);  /* Concatena as strings p e concat com "->" e armazena em dest */
+    return dest;  /* Retorna o ponteiro para a nova string concatenada */
 }
 
-
-double getLinkValue(Lig *l, char *indice){
-    switch (*indice)
-    {
-    case 'H':
-        return l->indiceTemporal;
-        break;
-    case 'E':
-        return l->indiceEconomico;
-        break;
-    case 'T':
-        return l->indiceTuristico;
-        break;
+double getLinkValue(Lig *l, char *indice) {
+    switch (*indice) {
+        case 'H':
+            return l->indiceTemporal;  /* Retorna o valor do índice temporal */
+            break;
+        case 'E':
+            return l->indiceEconomico;  /* Retorna o valor do índice econômico */
+            break;
+        case 'T':
+            return l->indiceTuristico;  /* Retorna o valor do índice turístico */
+            break;
     }
-    return l->indiceTemporal;
+    return l->indiceTemporal;  /* Retorna o valor padrão do índice temporal caso o caractere do índice seja desconhecido */
 }
 
 void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino, char *indice) {
@@ -784,12 +740,10 @@ void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino,
 
 }
 
-
-/* Função para guardar o mapa num arquivo */
 void guardar_file(Mapa *m, char *fileName) {
     /* Verificar se o mapa ou o nome do arquivo são nulos */
     if (m == NULL || fileName == NULL) {
-        printf("Erro: mapa ou nome do arquivo inválido.\n");
+        ERROR_FILE_EXTENSION(fileName);
         return;
     }
 
@@ -803,7 +757,7 @@ void guardar_file(Mapa *m, char *fileName) {
     /* Abrir o arquivo para escrita */
     FILE *file = fopen(fileName, "w");
     if (!file) {
-        printf("Não foi possível abrir o arquivo para escrita.\n");
+        ERROR_FILE_EXTENSION(fileName);
         return;
     }
 

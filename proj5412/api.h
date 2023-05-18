@@ -83,12 +83,13 @@ typedef struct mapa {
 
 typedef enum {NAO, SIM} Bool;
 
+/* Estrutura que representa um caminho entre cidades */
 typedef struct Path {
-    float totalValue;
-    Bool processed;  
-    Cidade *cidade;
-    char *totalPath;
-}Path;
+    float totalValue;  /* Valor total do caminho */
+    Bool processed;    /* Indica se o caminho foi processado */
+    Cidade *cidade;    /* Ponteiro para a cidade correspondente ao caminho */
+    char *totalPath;   /* Caminho total percorrido (alocado dinamicamente com malloc) */
+} Path;
 
 
 /**
@@ -164,11 +165,50 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo, char *cod_destino);
  */
 void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last);
 
-void change_turismo(Mapa *m,char *codigo_origem, char *codigo_last, float indice_t);
+/**
+ * @brief Modifica o valor do índice turístico entre duas cidades no mapa.
+ *
+ * @param m Ponteiro para o mapa contendo as cidades.
+ * @param codigo_origem Código de identificação da cidade de origem.
+ * @param codigo_last Código de identificação da cidade de destino.
+ * @param indice_t Novo valor do índice turístico a ser atribuído entre as cidades.
+ * 
+ * Essa função é uma função auxiliar que chama a função change_indice para modificar o valor do
+ * índice turístico entre duas cidades no mapa. A função change_indice é responsável por realizar a
+ * modificação real do valor do índice.
+ */
+void change_turismo(Mapa *m, char *codigo_origem, char *codigo_last, float indice_t);
 
-void change_economico(Mapa *m,char *codigo_origem, char *codigo_last, float indice_e);
 
-void change_temporal(Mapa *m,char *codigo_origem, char *codigo_last, float indice_h);
+/**
+ * @brief Modifica o valor do índice econômico entre duas cidades no mapa.
+ *
+ * @param m Ponteiro para o mapa contendo as cidades.
+ * @param codigo_origem Código de identificação da cidade de origem.
+ * @param codigo_last Código de identificação da cidade de destino.
+ * @param indice_e Novo valor do índice econômico a ser atribuído entre as cidades.
+ * 
+ * Essa função é uma função auxiliar que chama a função change_indice para modificar o valor do
+ * índice econômico entre duas cidades no mapa. A função change_indice é responsável por realizar a
+ * modificação real do valor do índice.
+ */
+void change_economico(Mapa *m, char *codigo_origem, char *codigo_last, float indice_e);
+
+
+/**
+ * @brief Modifica o valor do índice temporal entre duas cidades no mapa.
+ *
+ * @param m Ponteiro para o mapa contendo as cidades.
+ * @param codigo_origem Código de identificação da cidade de origem.
+ * @param codigo_last Código de identificação da cidade de destino.
+ * @param indice_h Novo valor do índice temporal a ser atribuído entre as cidades.
+ * 
+ * Essa função é uma função auxiliar que chama a função change_indice para modificar o valor do
+ * índice temporal entre duas cidades no mapa. A função change_indice é responsável por realizar a
+ * modificação real do valor do índice.
+ */
+void change_temporal(Mapa *m, char *codigo_origem, char *codigo_last, float indice_h);
+
 
 /**
  * @brief Remove uma cidade e todas as suas ligações do mapa e libera a memória alocada
@@ -218,7 +258,23 @@ double getLinkValue(Lig *l, char *indice);
 void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino, char *indice);
 
 
-void guardar_file(Mapa *m, char *fileName); 
+/**
+ * @brief Guarda o mapa em um arquivo com extensão .sgo.
+ *
+ * @param m Ponteiro para o mapa contendo as cidades.
+ * @param fileName Nome do arquivo a ser salvo.
+ * 
+ * Esta função guarda o mapa em um arquivo com extensão .sgo. Ela itera por cada cidade no mapa
+ * e escreve as informações relevantes no arquivo. O formato do arquivo segue um padrão, com
+ * operações específicas para adicionar cidades, adicionar ligações, e modificar os índices temporais
+ * e econômicos das ligações.
+ * 
+ * @note Certifique-se de que o mapa e o nome do arquivo não sejam nulos.
+ * @note O nome do arquivo deve ter a extensão .sgo.
+ * @note Caso ocorra algum erro ao abrir ou escrever no arquivo, uma mensagem de erro é exibida.
+ */
+void guardar_file(Mapa *m, char *fileName);
+
 
 /**
  * @brief Libera a memória alocada para todas as cidades e ligações do mapa e reinicializa o mapa
