@@ -564,7 +564,7 @@ void remover_cidade(Mapa *m, char *cidade)
     return;
 }
 
-void guardar_file()/* ADICIONADO POR ELISEU */{}
+    
 /*
 void save_data(Mapa *m, const char *file_name) {
     FILE *f;
@@ -727,19 +727,19 @@ void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino,
     Cidade *origem = procura_cidade(m, cidadeOrigem);
     Cidade *destino = procura_cidade(m, cidadeDestino);
     if (!origem) {
-        printf("*Cidade %s inexistente\n", cidadeOrigem);
+       ERROR_NO_CITY(cidadeOrigem);
         return;
     }
     if (!destino) {
-        printf("*Cidade %s inexistente\n", cidadeDestino);
+        ERROR_NO_CITY(cidadeDestino);
         return;
     }
     if (origem->estado == 0) {
-        printf("*Cidade %s inativa\n", cidadeOrigem);
+        ERROR_CITY_INACTIVE(cidadeOrigem);
         return;
     }
     if (destino->estado == 0) {
-        printf("*Cidade %s inativa\n", cidadeDestino);
+        ERROR_CITY_INACTIVE(cidadeDestino);
         return;
     }
 
@@ -782,4 +782,81 @@ void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino,
     }
     free(todos);
 
+}
+
+
+/* Função para guardar o mapa num arquivo */
+void guardar_file(Mapa *m, char *fileName) {
+    /* Verificar se o mapa ou o nome do arquivo são nulos */
+    if (m == NULL || fileName == NULL) {
+        printf("Erro: mapa ou nome do arquivo inválido.\n");
+        return;
+    }
+
+    /* Verificar se a extensão do arquivo é .sgo */
+    char *ext = strrchr(fileName, '.');
+    if (!ext || strcmp(ext, ".sgo") != 0) {
+        ERROR_FILE_EXTENSION(fileName);
+        return;
+    }
+
+    /* Abrir o arquivo para escrita */
+    FILE *file = fopen(fileName, "w");
+    if (!file) {
+        printf("Não foi possível abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    /* Iterar por cada cidade no mapa */
+    Cidade *cidadeAtual = m->firstC;
+    while (cidadeAtual != NULL) {
+        /* Escrever a operação do tipo 'A' para a cidade atual */
+        fprintf(file, ADD_CITY, cidadeAtual->codigo, cidadeAtual->nome);
+        cidadeAtual = cidadeAtual->nextC;
+    }
+
+    /* Iterar novamente por cada cidade para escrever as ligações */
+    cidadeAtual = m->firstC;
+    while (cidadeAtual != NULL) {
+        Lig *ligacaoAtual = cidadeAtual->first;
+        while (ligacaoAtual != NULL) {
+            /* Escrever a operação do tipo 'C' para a ligação atual */
+            fprintf(file, ADD_LINK, cidadeAtual->codigo, ligacaoAtual->destino);
+            ligacaoAtual = ligacaoAtual->nextL;
+        }
+        cidadeAtual = cidadeAtual->nextC;
+    }
+
+    /* Iterar novamente por cada cidade para escrever os índices temporais */
+    cidadeAtual = m->firstC;
+    while (cidadeAtual != NULL) {
+        Lig *ligacaoAtual = cidadeAtual->first;
+        while (ligacaoAtual != NULL) {
+            /* Se o índice temporal não for o padrão, escrever a operação do tipo 'T' */
+            if (ligacaoAtual->indiceTemporal != 1.00) { 
+                fprintf(file, CHANGE_TIME_INDEX, cidadeAtual->codigo, ligacaoAtual->destino, ligacaoAtual->indiceTemporal);
+            }
+            ligacaoAtual = ligacaoAtual->nextL;
+        }
+        cidadeAtual = cidadeAtual->nextC;
+    }
+
+    /* Iterar novamente por cada cidade para escrever os índices econômicos */
+    cidadeAtual = m->firstC;
+    while (cidadeAtual != NULL) {
+        Lig *ligacaoAtual = cidadeAtual->first;
+        while (ligacaoAtual != NULL) {
+            /* Se o índice econômico não for o padrão, escrever a operação do tipo 'E' */
+            if (ligacaoAtual->indiceEconomico != 1.00) { 
+                fprintf(file, CHANGE_ECONOMIC_INDEX, cidadeAtual->codigo, ligacaoAtual->destino, ligacaoAtual->indiceEconomico);
+            }
+            ligacaoAtual = ligacaoAtual->nextL;
+        }
+        cidadeAtual = cidadeAtual->nextC;
+    }
+
+
+    fclose(file);
+
+    MSG_FILE_SAVED(fileName);
 }

@@ -90,10 +90,6 @@ typedef struct Path {
     char *totalPath;
 }Path;
 
-void imprime_melhor_rota(Path *todos, int numCidades, char *cidadeOrigem, char *cidadeDestino, char *indice);
-char *concatPath(char *p, const char *concat);
-double getLinkValue(Lig *l, char *indice);
-void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino, char *indice);
 
 /**
  * API - Declaração das funções públicas
@@ -182,7 +178,47 @@ void change_temporal(Mapa *m,char *codigo_origem, char *codigo_last, float indic
  */
 void remover_cidade(Mapa *m, char *cidade); 
 
-void guardar_file(); 
+/**
+ * @brief Imprime a melhor rota entre duas cidades.
+ * 
+ * @param todos Ponteiro para o array de estruturas Path, que contém informações sobre todas as cidades.
+ * @param numCidades Número total de cidades no mapa.
+ * @param cidadeOrigem Código da cidade de origem.
+ * @param cidadeDestino Código da cidade de destino.
+ * @param indice Índice usado para determinar a melhor rota (pode ser 'H' para índice temporal, 'E' para índice econômico, ou 'T' para índice turístico).
+ */
+void imprime_melhor_rota(Path *todos, int numCidades, char *cidadeOrigem, char *cidadeDestino, char *indice);
+
+/**
+ * @brief Concatena duas strings com "->" entre elas.
+ * 
+ * @param p Ponteiro para a string original.
+ * @param concat Ponteiro para a string a ser concatenada.
+ * @return Ponteiro para a nova string concatenada.
+ */
+char *concatPath(char *p, const char *concat);
+
+/**
+ * @brief Obtém o valor do índice de uma ligação.
+ * 
+ * @param l Ponteiro para a estrutura Lig que representa a ligação.
+ * @param indice Índice usado para determinar o valor (pode ser 'H' para índice temporal, 'E' para índice econômico, ou 'T' para índice turístico).
+ * @return Valor do índice da ligação.
+ */
+double getLinkValue(Lig *l, char *indice);
+
+/**
+ * @brief Calcula a melhor rota entre duas cidades e imprime a rota.
+ * 
+ * @param m Ponteiro para o mapa que contém as cidades.
+ * @param cidadeOrigem Código da cidade de origem.
+ * @param cidadeDestino Código da cidade de destino.
+ * @param indice Índice usado para determinar a melhor rota (pode ser 'H' para índice temporal, 'E' para índice econômico, ou 'T' para índice turístico).
+ */
+void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino, char *indice);
+
+
+void guardar_file(Mapa *m, char *fileName); 
 
 /**
  * @brief Libera a memória alocada para todas as cidades e ligações do mapa e reinicializa o mapa
