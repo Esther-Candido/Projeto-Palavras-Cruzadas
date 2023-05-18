@@ -108,7 +108,7 @@ void executeCommand(char *line)
         melhor_rota_entre_cidades(m, attr1, attr2, attrindice);
         break;
     case 'G': /*Guarda a base de dados*/
-        guardar_file(m, fileName); 
+        guardar_file(m, fileName);
         break;
     case 'X': /*sai da aplicação*/
         free(attr1);

@@ -2,7 +2,6 @@
 #define API_H
 #include <stdio.h>
 
-
 /*dimensão dos campos*/
 #define CITY_ID 3 /* Tipo AAA*/
 #define MAX_CITY_NAME 50
@@ -10,8 +9,6 @@
 #define MAX_FILE_NAME 100 /*tamanho da string passada como argumento ao programa*/
 
 /*MENSAGENS API*/
-
-
 #define MSG_TOTAL_CITIES(TOTAL) printf("%d\n",TOTAL);
 #define MSG_CITY_INFO_HEADER(CITY,STATUS,LINKS,NAME) printf("%s (%d): Existem %d ligações a partir de %s\n",CITY,STATUS,LINKS,NAME);
 #define MSG_CITY_INFO_ITEM(TO_CITY,IH,IE,IT) printf("\t->%s: %.2f %.2f %.2f\n",TO_CITY,IH,IE,IT);
@@ -36,6 +33,8 @@
 #define CHANGE_TURISTIC_INDEX "T %s %s %.2f\n"
 #define CHANGE_ECONOMIC_INDEX "E %s %s %.2f\n"
 #define CHANGE_TIME_INDEX "H %s %s %.2f\n"
+
+
 
 /* Modelo de Dados */
 

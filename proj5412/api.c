@@ -82,66 +82,6 @@ Lig *percorre_ligacoes(Lig *cidade_atual)
     return NULL;
 }
 
-void change_indice(Mapa *m, char *codigo_origem, char *codigo_last, float indice, char type) {
-    /* Utiliza a função procura_cidade para encontrar a cidade de origem */
-    Cidade *first = procura_cidade(m, codigo_origem);
-
-    /* Utiliza a função procura_cidade para encontrar a cidade de destino */
-    Cidade *last = procura_cidade(m, codigo_last);
-
-    /* Verifica se ambas as cidades não existem e exibe erros, caso necessário */
-    if (first == NULL && last == NULL) {
-        ERROR_NO_CITY(codigo_origem);
-        ERROR_NO_CITY(codigo_last);
-        return;
-    }
-
-    /* Verifica se a cidade de origem não existe e exibe erro */
-    if (first == NULL) {
-        ERROR_NO_CITY(codigo_origem);
-        return;
-    }
-
-    /* Verifica se a cidade de destino não existe e exibe erro */
-    if (last == NULL) {
-        ERROR_NO_CITY(codigo_last);
-        return;
-    }
-
-    /* Verifica se as cidades de origem e destino são as mesmas e exibe erro */
-    if (first->codigo == last->codigo) {
-        ERROR_CITY_REPEATED(first->codigo);
-        return;
-    }
-
-    /* Procura a ligação na cidade de origem */
-    Lig *aux = procura_ligacoes(first, codigo_last);
-
-    /* Se a ligação não for encontrada, exibe um erro e retorna */
-    if (aux == NULL) {
-        ERROR_NO_LINK(codigo_origem, codigo_last);
-        return;
-    }
-
-    /* Altera o índice turístico, econômico ou temporal, conforme especificado pelo parâmetro 'type' */
-    if (type == 'T') {
-        aux->indiceTuristico = indice;
-        printf("%.2f\n", aux->indiceTuristico);
-        return;
-    } 
-    if (type == 'E') {
-        aux->indiceEconomico = indice;
-        printf("%.2f\n", aux->indiceEconomico);
-        return;
-    }
-    if (type == 'H') {
-        aux->indiceTemporal = indice; 
-        printf("%.2f\n", aux->indiceTemporal); 
-        return;
-    }
-
-}
-
 Path *inicializa_todos(Mapa *m, char *cidadeOrigem, char *indice) {
     Path *todos = malloc(m->numCidades * sizeof(Path));  /* Aloca memória para o array de Path */
     Cidade *c = m->firstC;  /* Ponteiro para a primeira cidade no mapa */
@@ -194,6 +134,62 @@ Path *getOpenShortest(Mapa *m, Path *todos) {
     return menor;  /* Retorna o ponteiro menor */
 }
 
+void change_indice(Mapa *m, char *codigo_origem, char *codigo_last, float indice, char type) {
+    /* Utiliza a função procura_cidade para encontrar a cidade de origem */
+    Cidade *first = procura_cidade(m, codigo_origem);
+
+    /* Utiliza a função procura_cidade para encontrar a cidade de destino */
+    Cidade *last = procura_cidade(m, codigo_last);
+
+    /* Verifica se ambas as cidades não existem e exibe erros, caso necessário */
+    if (first == NULL && last == NULL) {
+        ERROR_NO_CITY(codigo_origem);
+        ERROR_NO_CITY(codigo_last);
+        return;
+    }
+
+    /* Verifica se a cidade de origem não existe e exibe erro */
+    if (first == NULL) {
+        ERROR_NO_CITY(codigo_origem);
+        return;
+    }
+
+    /* Verifica se a cidade de destino não existe e exibe erro */
+    if (last == NULL) {
+        ERROR_NO_CITY(codigo_last);
+        return;
+    }
+
+    /* Verifica se as cidades de origem e destino são as mesmas e exibe erro */
+    if (first->codigo == last->codigo) {
+        ERROR_CITY_REPEATED(first->codigo);
+        return;
+    }
+
+    /* Procura a ligação na cidade de origem */
+    Lig *aux = procura_ligacoes(first, codigo_last);
+
+    /* Se a ligação não for encontrada, exibe um erro e retorna */
+    if (aux == NULL) {
+        ERROR_NO_LINK(codigo_origem, codigo_last);
+        return;
+    }
+
+    /* Altera o índice turístico, econômico ou temporal, conforme especificado pelo parâmetro 'type' */
+    if (type == 'T') {
+        aux->indiceTuristico = indice;
+        return;
+    } 
+    if (type == 'E') {
+        aux->indiceEconomico = indice;
+        return;
+    }
+    if (type == 'H') {
+        aux->indiceTemporal = indice; 
+        return;
+    }
+
+}
 
 /**
  * ######### Implementação das Funções da Biblioteca#########
@@ -358,17 +354,7 @@ void print_cidades(Mapa *m)
 
 void total_cidades(Mapa *m)
 {
-    /* Caso o banco de dados esteja vazio */
-
-    if (m->numCidades == 0)
-    {
-        ERROR_DB_EMPTY;
-        return;
-    }
-    
-    /* Imprime o número total de cidades no mapa */
-    printf("%d", m->numCidades);
-    
+    MSG_TOTAL_CITIES(m->numCidades);
 }
 
 void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){ 
@@ -406,7 +392,7 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){
     Lig *liga = procura_ligacoes(addliga_origem, cod_destino);
 
         if (liga != NULL && strcmp(liga->destino, cod_destino) == 0){
-         
+                
                 return;
             }
 
@@ -435,7 +421,7 @@ void adiciona_ligacao_cidade(Mapa *m, char *codigo_origem, char *cod_destino){
     nova_liga->prevL = addliga_origem->last; /*Voltar no ponteiro e definir que o nextL agora é o last*/
     nova_liga->nextL = NULL;  /*Deixar o nextL como NULL para dar abertura a receber novas ligações*/
     addliga_origem->last = nova_liga; /* a ligação LAST sera a nova_liga*/
-    
+    return;
 }
 
 void free_ligacao(Mapa *m, char *codigo_origem, char *codigo_last) 
@@ -637,7 +623,10 @@ void free_mapa(Mapa *m) {
 void imprime_melhor_rota(Path *todos, int numCidades, char *cidadeOrigem, char *cidadeDestino, char *indice) {
     int i;
     for (i = 0; i < numCidades; i++) {
+
+        /* Compara se a rota criada é para o destino */
         if (strcmp(todos[i].cidade->codigo, cidadeDestino) == 0) {
+            /* Caso exista rota entra no if*/
             if (todos[i].totalPath != NULL) {
                 MSG_ROUTE_HEADER(cidadeOrigem, cidadeDestino, *indice, todos[i].totalValue);
                 MSG_ROUTE_ITEM(todos[i].totalPath);
@@ -682,6 +671,12 @@ void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino,
     /* Verifica se as cidades de origem e destino existem e estão ativas */
     Cidade *origem = procura_cidade(m, cidadeOrigem);
     Cidade *destino = procura_cidade(m, cidadeDestino);
+    if (!origem && !destino){
+        ERROR_NO_CITY(cidadeOrigem);
+        ERROR_NO_CITY(cidadeDestino);
+        return;
+    }
+    
     if (!origem) {
        ERROR_NO_CITY(cidadeOrigem);
         return;
@@ -764,43 +759,37 @@ void guardar_file(Mapa *m, char *fileName) {
     /* Iterar por cada cidade no mapa */
     Cidade *cidadeAtual = m->firstC;
     while (cidadeAtual != NULL) {
-        /* Escrever a operação do tipo 'A' para a cidade atual */
         fprintf(file, ADD_CITY, cidadeAtual->codigo, cidadeAtual->nome);
         cidadeAtual = cidadeAtual->nextC;
     }
 
-    /* Iterar novamente por cada cidade para escrever as ligações */
+  
     cidadeAtual = m->firstC;
     while (cidadeAtual != NULL) {
         Lig *ligacaoAtual = cidadeAtual->first;
         while (ligacaoAtual != NULL) {
-            /* Escrever a operação do tipo 'C' para a ligação atual */
             fprintf(file, ADD_LINK, cidadeAtual->codigo, ligacaoAtual->destino);
             ligacaoAtual = ligacaoAtual->nextL;
         }
         cidadeAtual = cidadeAtual->nextC;
     }
 
-    /* Iterar novamente por cada cidade para escrever os índices temporais */
     cidadeAtual = m->firstC;
     while (cidadeAtual != NULL) {
         Lig *ligacaoAtual = cidadeAtual->first;
         while (ligacaoAtual != NULL) {
-            /* Se o índice temporal não for o padrão, escrever a operação do tipo 'T' */
-            if (ligacaoAtual->indiceTemporal != 1.00) { 
-                fprintf(file, CHANGE_TIME_INDEX, cidadeAtual->codigo, ligacaoAtual->destino, ligacaoAtual->indiceTemporal);
+            if (ligacaoAtual->indiceTuristico != 1.00) { 
+                fprintf(file, CHANGE_TURISTIC_INDEX, cidadeAtual->codigo, ligacaoAtual->destino, ligacaoAtual->indiceTuristico);
             }
             ligacaoAtual = ligacaoAtual->nextL;
         }
         cidadeAtual = cidadeAtual->nextC;
     }
 
-    /* Iterar novamente por cada cidade para escrever os índices econômicos */
     cidadeAtual = m->firstC;
     while (cidadeAtual != NULL) {
         Lig *ligacaoAtual = cidadeAtual->first;
         while (ligacaoAtual != NULL) {
-            /* Se o índice econômico não for o padrão, escrever a operação do tipo 'E' */
             if (ligacaoAtual->indiceEconomico != 1.00) { 
                 fprintf(file, CHANGE_ECONOMIC_INDEX, cidadeAtual->codigo, ligacaoAtual->destino, ligacaoAtual->indiceEconomico);
             }
@@ -809,7 +798,18 @@ void guardar_file(Mapa *m, char *fileName) {
         cidadeAtual = cidadeAtual->nextC;
     }
 
-
+    cidadeAtual = m->firstC;
+    while (cidadeAtual != NULL) {
+        Lig *ligacaoAtual = cidadeAtual->first;
+        while (ligacaoAtual != NULL) {
+            if (ligacaoAtual->indiceTemporal != 1.00) { 
+                fprintf(file, CHANGE_TIME_INDEX, cidadeAtual->codigo, ligacaoAtual->destino, ligacaoAtual->indiceTemporal);
+            }
+            ligacaoAtual = ligacaoAtual->nextL;
+        }
+        cidadeAtual = cidadeAtual->nextC;
+    }
+    
     fclose(file);
 
     MSG_FILE_SAVED(fileName);
