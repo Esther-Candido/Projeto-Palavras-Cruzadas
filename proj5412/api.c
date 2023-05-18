@@ -611,6 +611,7 @@ void remover_cidade(Mapa *m, char *cidade)
     /* Case seja a única cidade */ 
     if (c->nextC == NULL && c->prevC == NULL)
     {
+        free(c->nome);
         free(c);
         m->firstC = NULL;
         m->lastC = NULL;
@@ -622,6 +623,7 @@ void remover_cidade(Mapa *m, char *cidade)
     {
         c->nextC->prevC = NULL;
         m->firstC = c->nextC;
+        free(c->nome);
         free(c);
         return;
     }
@@ -631,6 +633,7 @@ void remover_cidade(Mapa *m, char *cidade)
     {
         c->prevC->nextC=NULL;
         m->lastC=c->prevC;
+        free(c->nome);
         free(c);
         return;
     }
@@ -639,31 +642,9 @@ void remover_cidade(Mapa *m, char *cidade)
     /* Caso Geral - Apagar no meio */ 
     c->prevC->nextC = c->nextC;
     c->nextC->prevC = c->prevC;
+    free(c->nome);
     free(c);
     return;
-}
-
-void free_mapa(Mapa *m) {
-    Cidade *cidade = m->firstC; /* Ponteiro para a primeira cidade no mapa */
-
-    /* Percorre todas as cidades no mapa */
-    while (cidade != NULL) {
-        Lig *ligacao = cidade->first; /* Ponteiro para a primeira ligação da cidade */
-
-        /* Percorre todas as ligações da cidade */
-        while (ligacao != NULL) {
-            Lig *proximaLigacao = ligacao->nextL; /* Ponteiro para a próxima ligação */
-            free(ligacao); /* Libera a memória alocada para a ligação atual */
-            ligacao = proximaLigacao; /* Avança para a próxima ligação */
-        }
-
-        Cidade *proximaCidade = cidade->nextC; /* Ponteiro para a próxima cidade */
-        free(cidade->nome); /* Libera a memória alocada para o nome da cidade */
-        free(cidade); /* Libera a memória alocada para a cidade atual */
-        cidade = proximaCidade; /* Avança para a próxima cidade */
-    }
-
-    free(m); /* Libera a memória alocada para a estrutura do mapa */
 }
 
 void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino, char *indice) {
@@ -827,4 +808,27 @@ void guardar_file(Mapa *m, char *fileName) {
     fclose(file);
 
     MSG_FILE_SAVED(fileName);
+}
+
+void free_mapa(Mapa *m) {
+    Cidade *cidade = m->firstC; /* Ponteiro para a primeira cidade no mapa */
+
+    /* Percorre todas as cidades no mapa */
+    while (cidade != NULL) {
+        Lig *ligacao = cidade->first; /* Ponteiro para a primeira ligação da cidade */
+
+        /* Percorre todas as ligações da cidade */
+        while (ligacao != NULL) {
+            Lig *proximaLigacao = ligacao->nextL; /* Ponteiro para a próxima ligação */
+            free(ligacao); /* Libera a memória alocada para a ligação atual */
+            ligacao = proximaLigacao; /* Avança para a próxima ligação */
+        }
+
+        Cidade *proximaCidade = cidade->nextC; /* Ponteiro para a próxima cidade */
+        free(cidade->nome); /* Libera a memória alocada para o nome da cidade */
+        free(cidade); /* Libera a memória alocada para a cidade atual */
+        cidade = proximaCidade; /* Avança para a próxima cidade */
+    }
+
+    free(m); /* Libera a memória alocada para a estrutura do mapa */
 }
