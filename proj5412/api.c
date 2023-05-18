@@ -134,6 +134,52 @@ Path *getOpenShortest(Mapa *m, Path *todos) {
     return menor;  /* Retorna o ponteiro menor */
 }
 
+double getLinkValue(Lig *l, char *indice) {
+    switch (*indice) {
+        case 'H':
+            return l->indiceTemporal;  /* Retorna o valor do índice temporal */
+            break;
+        case 'E':
+            return l->indiceEconomico;  /* Retorna o valor do índice econômico */
+            break;
+        case 'T':
+            return l->indiceTuristico;  /* Retorna o valor do índice turístico */
+            break;
+    }
+    return l->indiceTemporal;  /* Retorna o valor padrão do índice temporal caso o caractere do índice seja desconhecido */
+}
+
+char *concatPath(char *p, const char *concat) {
+    size_t a = strlen(p);  /* Tamanho da string p */
+    size_t b = strlen(concat);  /* Tamanho da string concat */
+    size_t size_ab = a + 2 + b + 1;  /* Tamanho necessário para a nova string concatenada */
+
+    char *dest = malloc(size_ab);  /* Aloca memória para a nova string concatenada */
+    if (dest == NULL) {
+        return NULL;  /* Retorna NULL em caso de falha na alocação de memória */
+    }
+
+    sprintf(dest, "%s->%s", p, concat);  /* Concatena as strings p e concat com "->" e armazena em dest */
+    return dest;  /* Retorna o ponteiro para a nova string concatenada */
+}
+
+void imprime_melhor_rota(Path *todos, int numCidades, char *cidadeOrigem, char *cidadeDestino, char *indice) {
+    int i;
+    for (i = 0; i < numCidades; i++) {
+
+        /* Compara se a rota criada é para o destino */
+        if (strcmp(todos[i].cidade->codigo, cidadeDestino) == 0) {
+            /* Caso exista rota entra no if*/
+            if (todos[i].totalPath != NULL) {
+                MSG_ROUTE_HEADER(cidadeOrigem, cidadeDestino, *indice, todos[i].totalValue);
+                MSG_ROUTE_ITEM(todos[i].totalPath);
+                return;  /* Retorna após imprimir a melhor rota */
+            }
+        }
+    }
+    ERROR_NO_ROUTE(cidadeOrigem, cidadeDestino);  /* Imprime uma mensagem de erro se não houver rota disponível */
+}
+
 void change_indice(Mapa *m, char *codigo_origem, char *codigo_last, float indice, char type) {
     /* Utiliza a função procura_cidade para encontrar a cidade de origem */
     Cidade *first = procura_cidade(m, codigo_origem);
@@ -618,52 +664,6 @@ void free_mapa(Mapa *m) {
     }
 
     free(m); /* Libera a memória alocada para a estrutura do mapa */
-}
-
-void imprime_melhor_rota(Path *todos, int numCidades, char *cidadeOrigem, char *cidadeDestino, char *indice) {
-    int i;
-    for (i = 0; i < numCidades; i++) {
-
-        /* Compara se a rota criada é para o destino */
-        if (strcmp(todos[i].cidade->codigo, cidadeDestino) == 0) {
-            /* Caso exista rota entra no if*/
-            if (todos[i].totalPath != NULL) {
-                MSG_ROUTE_HEADER(cidadeOrigem, cidadeDestino, *indice, todos[i].totalValue);
-                MSG_ROUTE_ITEM(todos[i].totalPath);
-                return;  /* Retorna após imprimir a melhor rota */
-            }
-        }
-    }
-    ERROR_NO_ROUTE(cidadeOrigem, cidadeDestino);  /* Imprime uma mensagem de erro se não houver rota disponível */
-}
-
-char *concatPath(char *p, const char *concat) {
-    size_t a = strlen(p);  /* Tamanho da string p */
-    size_t b = strlen(concat);  /* Tamanho da string concat */
-    size_t size_ab = a + 2 + b + 1;  /* Tamanho necessário para a nova string concatenada */
-
-    char *dest = malloc(size_ab);  /* Aloca memória para a nova string concatenada */
-    if (dest == NULL) {
-        return NULL;  /* Retorna NULL em caso de falha na alocação de memória */
-    }
-
-    sprintf(dest, "%s->%s", p, concat);  /* Concatena as strings p e concat com "->" e armazena em dest */
-    return dest;  /* Retorna o ponteiro para a nova string concatenada */
-}
-
-double getLinkValue(Lig *l, char *indice) {
-    switch (*indice) {
-        case 'H':
-            return l->indiceTemporal;  /* Retorna o valor do índice temporal */
-            break;
-        case 'E':
-            return l->indiceEconomico;  /* Retorna o valor do índice econômico */
-            break;
-        case 'T':
-            return l->indiceTuristico;  /* Retorna o valor do índice turístico */
-            break;
-    }
-    return l->indiceTemporal;  /* Retorna o valor padrão do índice temporal caso o caractere do índice seja desconhecido */
 }
 
 void melhor_rota_entre_cidades(Mapa *m, char *cidadeOrigem, char *cidadeDestino, char *indice) {
